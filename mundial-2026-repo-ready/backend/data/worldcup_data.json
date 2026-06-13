@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "source": "https://worldcup26.ir",
+    "updated_at_utc": "",
+    "note": "Datos de ejemplo. Ejecuta python scripts/update_data.py para sincronizar datos reales."
+  },
+  "classification": [
+    {
+      "team": "Ejemplo FC",
+      "group": "A",
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "goal_difference": 0,
+      "points": 0
+    }
+  ],
+  "top_scorers": [
+    {
+      "player": "Jugador de ejemplo",
+      "team": "Ejemplo FC",
+      "goals": 0,
+      "age": "",
+      "position": ""
+    }
+  ],
+  "games": [],
+  "teams": [],
+  "groups": [],
+  "stadiums": []
+}

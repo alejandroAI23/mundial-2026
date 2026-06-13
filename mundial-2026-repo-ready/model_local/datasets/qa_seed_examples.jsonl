@@ -1,0 +1,4 @@
+{"question":"¿Quién es el máximo goleador?","answer":"El máximo goleador se obtiene del archivo worldcup_top_scorers.csv ordenando por goles descendente."}
+{"question":"¿Quién lidera el grupo A?","answer":"Para saber el líder del grupo A, consulta worldcup_classification.csv y ordena los equipos del grupo A por puntos, diferencia de goles y goles a favor."}
+{"question":"¿Cuántos puntos tiene España?","answer":"Busca España en worldcup_classification.csv y devuelve el valor de la columna points."}
+{"question":"Dame la clasificación general","answer":"Ordena worldcup_classification.csv por puntos, diferencia de goles y goles a favor en orden descendente."}

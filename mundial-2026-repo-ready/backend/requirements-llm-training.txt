@@ -1,0 +1,10 @@
+# Entrenamiento local/Colab con LoRA/QLoRA. Recomendado en entorno con GPU.
+pandas==2.2.3
+datasets==3.2.0
+transformers==4.47.1
+trl==0.13.0
+peft==0.14.0
+accelerate==1.2.1
+bitsandbytes==0.45.0
+# Unsloth suele requerir instalación según CUDA; consulta documentación oficial.
+# unsloth
