@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Predicciones IA | Mundial 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Mundial 2026</div>
+    <ul class="nav-links">
+      <li><a href="inicio.html">Inicio</a></li>
+      <li><a href="index.html">Calendario</a></li>
+      <li><a href="plantillas.html">Plantillas</a></li>
+      <li><a href="predicciones.html" class="active">Predicciones</a></li>
+      <li><a href="chatbot.html">Asistente AI</a></li>
+    </ul>
+  </nav>
+  <header class="hero" style="background:linear-gradient(135deg,#9b0076,#ff4e50);">
+    <div class="hero-content">
+      <h1>Predicciones del Mundial 2026</h1>
+      <p>Zona preparada para incorporar IA, estadísticas históricas y pronósticos razonados por partido.</p>
+    </div>
+  </header>
+  <main class="container">
+    <section>
+      <h2>Predicción de resultados</h2>
+      <p>Estas probabilidades son una demo estática. La siguiente fase sería conectarlo a un modelo propio con ranking FIFA, Elo, forma reciente, goles, bajas y rendimiento por fase.</p>
+      <table id="predictions-table"><thead><tr><th>Partido</th><th>Probabilidades demo</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section>
+      <h2>Cómo evolucionarlo con IA</h2>
+      <div class="feature-grid">
+        <article class="feature-card"><h3>Modelo ligero</h3><p>Regresión logística o Elo para estimar victoria, empate y derrota.</p></article>
+        <article class="feature-card"><h3>Explicación IA</h3><p>Resumen textual: forma reciente, jugadores clave y puntos débiles.</p></article>
+        <article class="feature-card"><h3>Simulador</h3><p>Permitir que el usuario cambie resultados y vea cómo queda el grupo.</p></article>
+      </div>
+    </section>
+  </main>
+  <footer><p>&copy; 2026 Mundial 2026. Proyecto de AlejandroAI23.</p></footer>
+  <script>
+    const matches=[
+      {match:'Argentina vs España',prob:[55,30,15]},
+      {match:'Brasil vs Francia',prob:[52,28,20]},
+      {match:'México vs Alemania',prob:[40,35,25]},
+      {match:'Estados Unidos vs Italia',prob:[45,32,23]}
+    ];
+    const tbody=document.querySelector('#predictions-table tbody');
+    matches.forEach(m=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${m.match}</td><td>Local ${m.prob[0]}% · Empate ${m.prob[1]}% · Visitante ${m.prob[2]}%</td>`;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+</html>
