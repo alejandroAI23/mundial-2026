@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 from typing import Any
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from services.balldontlie_service import get_player_ranking
 from services.data_store import load_data, save_data, csv_paths
@@ -11,6 +12,11 @@ from services.stats_service import build_prediction, update_all_data
 APP_NAME = os.getenv("APP_NAME", "Mundial 2026 IA API")
 AUTO_SYNC_ON_STARTUP = os.getenv("AUTO_SYNC_ON_STARTUP", "true").lower() == "true"
 app = FastAPI(title=APP_NAME, version="1.1.0")
+origins = ["https://alejandroai23.github.io", "http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5500"]
+extra = os.getenv("CORS_ORIGINS", "")
+if extra:
+    origins.extend([item.strip() for item in extra.split(",") if item.strip()])
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=False, allow_methods=["GET", "POST", "OPTIONS"])
 DATA: dict[str, Any] = load_data()
 
 class QARequest(BaseModel):
