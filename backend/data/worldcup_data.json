@@ -1,0 +1,11 @@
+{
+  "classification": [],
+  "top_scorers": [],
+  "matches": [],
+  "teams": [],
+  "stadiums": [],
+  "metadata": {
+    "source": "bundled-empty-data",
+    "note": "Ejecuta POST /api/sync o python scripts/update_data.py para poblar datos desde worldcup26.ir"
+  }
+}
