@@ -46,6 +46,16 @@ class QAServiceTests(unittest.TestCase):
         result = answer_question("¿Quién ganará España vs Brasil?", self.data)
         self.assertIn("España", result["answer"]) or "Brasil" in result["answer"]
 
+    def test_player_or_discipline_question_has_clear_fallback(self):
+        result = answer_question("¿Quién es el jugador más joven del Mundial?", self.data)
+        self.assertIn("No tengo", result["answer"])
+        self.assertIn("jugadores", result["answer"])
+
+    def test_intent_detection_for_support_message(self):
+        result = answer_question("¿Qué puedo preguntarte?", self.data)
+        answer = result["answer"].lower()
+        self.assertTrue("puedes preguntarme" in answer or "clasificación" in answer)
+
 
 if __name__ == "__main__":
     unittest.main()

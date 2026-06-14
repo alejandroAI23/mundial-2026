@@ -6,6 +6,16 @@ from typing import Any
 from .stats_service import build_prediction
 
 
+INTENT_KEYWORDS = {
+    "classification": ["clasificacion", "clasificación", "grupo", "lider", "líder", "encabeza", "puntos", "puesto"],
+    "scorers": ["goleador", "goleadores", "maximo goleador", "máximo goleador", "pichichi"],
+    "matches": ["proximo", "próximo", "siguiente partido", "calendario", "cuando juega", "resultado", "resultados", "ultimo", "último", "finalizado", "jugados"],
+    "players": ["jugador", "jugadores", "edad", "joven", "más joven", "mas joven", "seleccion", "selección"],
+    "discipline": ["expulsado", "expulsados", "tarjeta", "tarjetas", "amarilla", "amarillas", "roja", "rojas", "disciplina", "sancion", "sanciones"],
+    "prediction": ["ganara", "ganará", "prediccion", "predicción", "quien gana", "quién gana"],
+    "help": ["ayuda", "puedes", "preguntar", "opciones", "que puedes", "qué puedes"],
+}
+
 TEAM_ALIASES = {
     "españa": "Spain",
     "espana": "Spain",
@@ -80,6 +90,14 @@ def _display_name(team: str) -> str:
     return TEAM_DISPLAY.get(team, team)
 
 
+def classify_intent(question: str) -> str:
+    q = normalize(question)
+    for intent, keywords in INTENT_KEYWORDS.items():
+        if any(keyword in q for keyword in keywords):
+            return intent
+    return "unknown"
+
+
 def _match_status(match: dict[str, Any]) -> str:
     finished = str(match.get("finished") or "").lower() in {"true", "1", "yes", "si"}
     elapsed = str(match.get("time_elapsed") or "").lower()
@@ -97,7 +115,16 @@ def answer_question(question: str, data: dict[str, Any]) -> dict[str, Any]:
     matches = data.get("matches", []) or []
 
     if not question.strip():
-        return {"answer": "Escribe una pregunta sobre clasificación, goleadores o partidos.", "source": "rules"}
+        return {"answer": "Escribe una pregunta sobre clasificación, goleadores, partidos o predicción.", "source": "rules"}
+
+    intent = classify_intent(question)
+
+    if intent in {"players", "discipline"}:
+        return {
+            "answer": "No tengo datos de jugadores o disciplina (edad, tarjetas, expulsiones) en la fuente actual. Sí puedo ayudarte con clasificación, partidos, goleadores y predicciones.",
+            "source": "rules",
+            "intent": intent,
+        }
 
     if any(x in q for x in ["maximo goleador", "maximo", "máximo goleador", "goleador", "pichichi"]):
         if not scorers:
@@ -195,13 +222,15 @@ def answer_question(question: str, data: dict[str, Any]) -> dict[str, Any]:
                 "data": pred,
             }
 
-    if any(x in q for x in ["ayuda", "puedes", "preguntar", "opciones"]):
+    if intent == "help" or any(x in q for x in ["ayuda", "puedes", "preguntar", "opciones", "que puedes", "qué puedes"]):
         return {
-            "answer": "Puedes preguntarme: quién es el máximo goleador, quién lidera el grupo A, cuántos puntos tiene España, o pedirme la clasificación.",
+            "answer": "Puedes preguntarme sobre clasificación, puntos, próximos partidos, resultados, goleadores y predicciones. No tengo datos de edad, tarjetas o expulsiones en la fuente actual.",
             "source": "rules",
+            "intent": intent,
         }
 
     return {
-        "answer": "No he entendido la pregunta. Prueba con: '¿Quién es el máximo goleador?', '¿Quién lidera el grupo A?' o '¿Cuántos puntos tiene España?'.",
+        "answer": "No he entendido la pregunta. Puedo ayudarte con clasificación, resultados, próximos partidos, goleadores y predicciones. Si buscas jugadores, tarjetas o expulsiones, todavía no tengo esa fuente de datos.",
         "source": "rules",
+        "intent": intent,
     }
