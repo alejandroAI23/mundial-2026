@@ -16,7 +16,7 @@ origins = ["https://alejandroai23.github.io", "http://localhost:3000", "http://l
 extra = os.getenv("CORS_ORIGINS", "")
 if extra:
     origins.extend([item.strip() for item in extra.split(",") if item.strip()])
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=False, allow_methods=["GET", "POST", "OPTIONS"])
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=False, allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["content-type"])
 DATA: dict[str, Any] = load_data()
 
 class QARequest(BaseModel):
@@ -80,7 +80,9 @@ def sync() -> dict[str, Any]:
     try:
         DATA = update_all_data()
         save_data(DATA)
-        return {"status": "ok", "metadata": DATA.get("metadata", {}), "classification_rows": len(DATA.get("classification", [])), "top_scorers_rows": len(DATA.get("top_scorers", []))}
+        advanced = DATA.get("advanced_player_stats", {}) or {}
+        advanced_meta = advanced.get("metadata", {}) if isinstance(advanced, dict) else {}
+        return {"status": "ok", "metadata": DATA.get("metadata", {}), "classification_rows": len(DATA.get("classification", [])), "top_scorers_rows": len(DATA.get("top_scorers", [])), "advanced_players_count": advanced_meta.get("players_count", 0)}
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"No se pudo sincronizar con la API externa: {exc}") from exc
 
