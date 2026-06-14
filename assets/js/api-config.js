@@ -1,6 +1,6 @@
 // Cambia esta URL cuando tengas el backend desplegado en Render/Replit.
 // Ejemplo Render: https://mundial-2026-ai-api.onrender.com
-window.MUNDIAL_2026_API_BASE = localStorage.getItem("MUNDIAL_2026_API_BASE") || "http://127.0.0.1:8000";
+window.MUNDIAL_2026_API_BASE = "https://mundial-2026-api-8dvp.onrender.com";
 
 window.setMundialApiBase = function(url) {
   const clean = String(url || "").replace(/\/$/, "");
