@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-# BALLDONTLIE advanced player stats integration.
+import os
+
+BALLDONTLIE_API_KEY = os.getenv("BALLDONTLIE_API_KEY", "")
