@@ -1,0 +1,13 @@
+name: Keep Render Backend Alive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl --fail --silent --show-error https://mundial-2026-api-8dvp.onrender.com/health
