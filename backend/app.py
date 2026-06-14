@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from services.apifootball_service import get_match_best_players, get_player_ranking
 from services.data_store import load_data, save_data, csv_paths
-from services.qa_service import answer_question
+from services.qa_service_apifootball import answer_question
 from services.stats_service import build_prediction, update_all_data
 
 APP_NAME = os.getenv("APP_NAME", "Mundial 2026 IA API")
