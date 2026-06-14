@@ -12,7 +12,7 @@ from services.qa_service import answer_question
 from services.stats_service import build_prediction, update_all_data
 
 APP_NAME = os.getenv("APP_NAME", "Mundial 2026 IA API")
-AUTO_SYNC_ON_STARTUP = os.getenv("AUTO_SYNC_ON_STARTUP", "false").lower() == "true"
+AUTO_SYNC_ON_STARTUP = os.getenv("AUTO_SYNC_ON_STARTUP", "true").lower() == "true"
 
 app = FastAPI(title=APP_NAME, version="1.0.0")
 
