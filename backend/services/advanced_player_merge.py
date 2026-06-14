@@ -72,6 +72,8 @@ def merge_match_stats(db: dict[str, dict[str, Any]], stats: list[dict[str, Any]]
 
 
 def merge_events(db: dict[str, dict[str, Any]], events: list[dict[str, Any]]) -> None:
+    yellow_events: dict[str, int] = {}
+    red_events: dict[str, int] = {}
     for item in events:
         incident_type = str(item.get("incident_type") or "").lower()
         incident_class = str(item.get("incident_class") or "").lower()
@@ -85,8 +87,12 @@ def merge_events(db: dict[str, dict[str, Any]], events: list[dict[str, Any]]) ->
             pid = player_id(player)
             if not pid:
                 continue
-            row = ensure_player(db, pid, player)
+            ensure_player(db, pid, player)
             if incident_class in {"yellow", "yellowcard"}:
-                row["yellow_cards"] += 1
+                yellow_events[pid] = yellow_events.get(pid, 0) + 1
             if incident_class in {"red", "yellowred", "redcard"}:
-                row["red_cards"] += 1
+                red_events[pid] = red_events.get(pid, 0) + 1
+    for pid, total in yellow_events.items():
+        db[pid]["yellow_cards"] = max(safe_int(db[pid].get("yellow_cards")), total)
+    for pid, total in red_events.items():
+        db[pid]["red_cards"] = max(safe_int(db[pid].get("red_cards")), total)
