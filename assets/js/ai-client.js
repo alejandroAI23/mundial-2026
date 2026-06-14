@@ -3,6 +3,22 @@
   const DEFAULT_BASE = "https://mundial-2026-api-8dvp.onrender.com";
   const baseUrl = (window.MUNDIAL_2026_API_BASE || DEFAULT_BASE).replace(/\/$/, "");
 
+  function locale() {
+    return window.Mundial2026Locale || null;
+  }
+
+  function localizeTeam(value) {
+    return locale()?.team ? locale().team(value) : String(value ?? "");
+  }
+
+  function localizeText(value) {
+    return locale()?.text ? locale().text(value) : String(value ?? "");
+  }
+
+  function localizeDate(value) {
+    return locale()?.date ? locale().date(value) : String(value ?? "Fecha pendiente");
+  }
+
   async function request(path, options = {}) {
     const response = await fetch(`${baseUrl}${path}`, {
       ...options,
@@ -36,15 +52,25 @@
   }
 
   async function clasificacion() {
-    return request("/api/clasificacion");
+    const rows = await request("/api/clasificacion");
+    return Array.isArray(rows) ? rows.map(row => ({ ...row, team: localizeTeam(row.team) })) : rows;
   }
 
   async function goleadores() {
-    return request("/api/goleadores");
+    const rows = await request("/api/goleadores");
+    return Array.isArray(rows) ? rows.map(row => ({ ...row, team: localizeTeam(row.team) })) : rows;
   }
 
   async function partidos() {
-    return request("/api/partidos");
+    const rows = await request("/api/partidos");
+    return Array.isArray(rows) ? rows.map(row => ({
+      ...row,
+      home_team_name_en: localizeTeam(row.home_team_name_en || row.home_team_label || row.home_team),
+      away_team_name_en: localizeTeam(row.away_team_name_en || row.away_team_label || row.away_team),
+      home_team_label: localizeTeam(row.home_team_label || row.home_team_name_en || row.home_team),
+      away_team_label: localizeTeam(row.away_team_label || row.away_team_name_en || row.away_team),
+      local_date: localizeDate(row.local_date)
+    })) : rows;
   }
 
   async function prediccion(payload) {
@@ -56,8 +82,9 @@
 
   function getAnswerText(payload) {
     if (!payload) return "No he recibido respuesta del backend.";
-    if (typeof payload === "string") return payload;
-    return payload.answer || payload.respuesta || payload.message || payload.prediction || payload.prediccion || JSON.stringify(payload, null, 2);
+    if (typeof payload === "string") return localizeText(payload);
+    const text = payload.answer || payload.respuesta || payload.message || payload.prediction || payload.prediccion || JSON.stringify(payload, null, 2);
+    return localizeText(text);
   }
 
   window.Mundial2026Api = {
