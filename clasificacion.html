@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clasificación Mundial 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="assets/js/api-config.js"></script>
+  <style>
+    :root { --bg:#f4f8ff; --text:#0f172a; --muted:#64748b; --line:rgba(15,23,42,.1); --blue:#1455d9; --green:#0ea66b; --shadow:0 18px 50px rgba(15,23,42,.11); }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#eaf2ff,#fff);color:var(--text)}
+    .top{padding:28px clamp(18px,5vw,70px);background:linear-gradient(135deg,#05225e,#08775c);color:#fff}.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.brand{font-size:24px;font-weight:900;text-decoration:none;color:#fff}.links{display:flex;gap:10px;flex-wrap:wrap}.links a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);padding:10px 14px;border-radius:999px;font-weight:800}.links a.active,.links a:hover{background:rgba(255,255,255,.22)}.hero{margin-top:44px;max-width:900px}.hero h1{font-size:clamp(34px,6vw,64px);line-height:1;margin:0 0 12px;letter-spacing:-.06em}.hero p{color:rgba(255,255,255,.82);font-size:18px;line-height:1.5}.wrap{width:min(1280px,calc(100% - 28px));margin:-34px auto 48px;display:grid;gap:18px}.panel{background:#fff;border:1px solid rgba(255,255,255,.8);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}.bar{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.bar h2{margin:0;font-size:28px;letter-spacing:-.04em}.bar button{border:0;border-radius:999px;background:linear-gradient(135deg,var(--green),#12b981);color:#fff;font-weight:900;padding:12px 16px;cursor:pointer}.groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px}.group-card{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}.group-title{display:flex;justify-content:space-between;padding:16px 18px;background:#f8fafc;border-bottom:1px solid var(--line);font-weight:900}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:center;font-size:14px}th{color:var(--muted);background:#fbfdff;font-size:12px;text-transform:uppercase;letter-spacing:.04em}td.team{text-align:left;font-weight:900}.pos{font-weight:900;color:var(--blue)}.empty,.loading,.error{padding:28px;text-align:center;color:var(--muted);font-weight:800}.error{color:#991b1b;background:#fff1f2}@media(max-width:820px){.groups{grid-template-columns:1fr;padding:12px}.top{padding-bottom:76px}.wrap{margin-top:-48px}.links a{font-size:13px}.bar{padding:18px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <nav class="nav">
+      <a class="brand" href="index.html">⚽ Mundial 2026</a>
+      <div class="links" aria-label="Navegación principal">
+        <a href="inicio.html">Inicio</a>
+        <a href="index.html">Resultados + Chatbot</a>
+        <a href="clasificacion.html" class="active">Clasificación</a>
+        <a href="plantillas.html">Plantillas</a>
+        <a href="predicciones.html">Predicciones</a>
+      </div>
+    </nav>
+    <section class="hero"><h1>Clasificación por grupos</h1><p>Página separada para consultar la tabla de posiciones. La pantalla principal queda reservada para resultados y chatbot.</p></section>
+  </header>
+  <main class="wrap">
+    <section class="panel">
+      <div class="bar"><h2>Grupos</h2><button id="reloadBtn">Actualizar clasificación</button></div>
+      <div id="groups" class="groups"><div class="loading">Cargando clasificación desde Render...</div></div>
+    </section>
+  </main>
+  <script>
+    const API_BASE = (window.MUNDIAL_2026_API_BASE || "https://mundial-2026-api-8dvp.onrender.com").replace(/\/$/, "");
+    const groupsEl = document.querySelector("#groups");
+    async function apiGet(path){const res=await fetch(`${API_BASE}${path}`);if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json();}
+    function groupBy(rows,key){return rows.reduce((acc,row)=>{const k=row[key]||"-";(acc[k] ||= []).push(row);return acc;},{});}    
+    function teamName(row){return row.team || row.name || row.team_name || row.country || "Selección";}
+    function num(row,...keys){for(const k of keys){if(row[k]!==undefined && row[k]!==null && row[k]!=="") return Number(row[k]) || 0;} return 0;}
+    function sortRows(rows){return rows.sort((a,b)=> num(b,"points")-num(a,"points") || num(b,"goal_difference","gd")-num(a,"goal_difference","gd") || num(b,"goals_for","gf")-num(a,"goals_for","gf"));}
+    function render(rows){
+      if(!rows.length){groupsEl.innerHTML='<div class="empty">No hay clasificación disponible. Ejecuta POST /api/sync desde Swagger.</div>';return;}
+      const grouped = groupBy(rows,"group");
+      groupsEl.innerHTML = Object.keys(grouped).sort().map(group=>{
+        const list = sortRows(grouped[group]);
+        return `<article class="group-card"><div class="group-title"><span>Grupo ${group}</span><span>${list.length} equipos</span></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Equipo</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>${list.map((r,i)=>`<tr><td class="pos">${i+1}</td><td class="team">${teamName(r)}</td><td><strong>${num(r,"points")}</strong></td><td>${num(r,"played","played_games")}</td><td>${num(r,"wins","won")}</td><td>${num(r,"draws","draw")}</td><td>${num(r,"losses","lost")}</td><td>${num(r,"goals_for","gf")}</td><td>${num(r,"goals_against","ga")}</td><td>${num(r,"goal_difference","gd")}</td></tr>`).join("")}</tbody></table></div></article>`;
+      }).join("");
+    }
+    async function load(){groupsEl.innerHTML='<div class="loading">Cargando clasificación desde Render...</div>';try{const rows=await apiGet('/api/clasificacion');render(Array.isArray(rows)?rows:[])}catch(e){groupsEl.innerHTML='<div class="error">No se pudo cargar /api/clasificacion. Revisa Render o CORS.</div>'}}
+    document.querySelector('#reloadBtn').addEventListener('click',load);load();
+  </script>
+</body>
+</html>
