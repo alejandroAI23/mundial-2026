@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .balldontlie_service import get_player_ranking
+from .balldontlie_service import get_player_ranking, load_advanced_player_stats, rank_advanced_player_stats
 from .stats_service import build_prediction
 
 
@@ -11,7 +11,7 @@ INTENT_KEYWORDS = {
     "classification": ["clasificacion", "clasificación", "grupo", "lider", "líder", "encabeza", "puntos", "puesto"],
     "scorers": ["goleador", "goleadores", "maximo goleador", "máximo goleador", "pichichi"],
     "matches": ["proximo", "próximo", "siguiente partido", "calendario", "cuando juega", "resultado", "resultados", "ultimo", "último", "finalizado", "jugados"],
-    "players": ["jugador", "jugadores", "edad", "joven", "más joven", "mas joven", "seleccion", "selección", "minutos", "faltas", "portero", "sustituido", "sustituciones", "fuera de juego", "penalti"],
+    "players": ["jugador", "jugadores", "edad", "joven", "más joven", "mas joven", "seleccion", "selección", "minutos", "faltas", "portero", "paradas", "sustituido", "sustituciones", "fuera de juego", "penalti"],
     "discipline": ["expulsado", "expulsados", "tarjeta", "tarjetas", "amarilla", "amarillas", "roja", "rojas", "disciplina", "sancion", "sanciones"],
     "prediction": ["ganara", "ganará", "prediccion", "predicción", "quien gana", "quién gana"],
     "help": ["ayuda", "puedes", "preguntar", "opciones", "que puedes", "qué puedes"],
@@ -45,6 +45,7 @@ ADVANCED_METRIC_LABELS = {
     "saves": "más paradas",
     "saves_inside_box": "más paradas dentro del área",
     "substituted_out": "más veces sustituido",
+    "offsides": "fueras de juego",
 }
 
 ADVANCED_METRIC_VALUE_LABELS = {
@@ -134,26 +135,42 @@ def _format_player(row: dict[str, Any]) -> str:
 
 def _format_metric_value(row: dict[str, Any], metric: str) -> str:
     if metric == "youngest":
-        age, birth = row.get("age"), row.get("date_of_birth")
+        age = row.get("age")
+        birth = row.get("date_of_birth")
         if age is not None and birth:
             return f"{age} años, nacido el {birth}"
         return f"nacido el {birth}" if birth else "edad no disponible"
-    return f"{row.get(metric)} {ADVANCED_METRIC_VALUE_LABELS.get(metric, metric)}"
+    value = row.get(metric, 0)
+    return f"{value} {ADVANCED_METRIC_VALUE_LABELS.get(metric, metric)}"
 
 
 def _answer_advanced_player_question(question: str, data: dict[str, Any]) -> dict[str, Any] | None:
     metric = _advanced_metric_from_query(normalize(question))
     if not metric:
         return None
-    if metric == "goals_conceded_goalkeeper":
-        return {"answer": "Todavía no tengo ranking fiable de porteros con menos goles encajados. Necesitaríamos goles encajados por portero/minutos o alineaciones completas por partido.", "source": "rules", "intent": "players", "metric": metric}
 
     result = get_player_ranking(data.get("advanced_player_stats", {}), metric, limit=5)
     if not result.get("supported", True):
-        return {"answer": result.get("answer"), "source": result.get("source", "balldontlie"), "intent": "players", "metric": result.get("metric", metric)}
+        return {
+            "answer": result.get("answer", "La fuente actual no expone esa métrica por jugador."),
+            "source": result.get("source", "balldontlie"),
+            "intent": "players",
+            "metric": result.get("metric", metric),
+        }
+
     ranking = result.get("ranking", [])
     if not ranking:
-        return {"answer": result.get("answer", "Todavía no tengo datos avanzados sincronizados para esa pregunta."), "source": result.get("source", "balldontlie"), "intent": "players", "metric": result.get("metric", metric), "metadata": result.get("metadata", {})}
+        fallback = load_advanced_player_stats()
+        if fallback:
+            ranking = rank_advanced_player_stats(fallback, metric)[:5]
+
+    if not ranking:
+        return {
+            "answer": "Todavía no tengo datos avanzados sincronizados para esa pregunta.",
+            "source": "balldontlie",
+            "intent": "players",
+            "metric": metric,
+        }
 
     normalized_metric = result.get("metric", metric)
     top = ranking[0]
