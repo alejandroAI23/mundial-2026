@@ -4,14 +4,14 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from services.balldontlie_service import get_player_ranking
+from services.apifootball_service import get_match_best_players, get_player_ranking
 from services.data_store import load_data, save_data, csv_paths
 from services.qa_service import answer_question
 from services.stats_service import build_prediction, update_all_data
 
 APP_NAME = os.getenv("APP_NAME", "Mundial 2026 IA API")
 AUTO_SYNC_ON_STARTUP = os.getenv("AUTO_SYNC_ON_STARTUP", "true").lower() == "true"
-app = FastAPI(title=APP_NAME, version="1.1.0")
+app = FastAPI(title=APP_NAME, version="1.2.0")
 origins = ["https://alejandroai23.github.io", "http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5500"]
 extra = os.getenv("CORS_ORIGINS", "")
 if extra:
@@ -38,7 +38,7 @@ def startup() -> None:
 
 @app.get("/")
 def root() -> dict[str, Any]:
-    return {"name": APP_NAME, "status": "ok", "docs": "/docs", "endpoints": ["/api/clasificacion", "/api/goleadores", "/api/partidos", "/api/equipos", "/api/estadios", "/api/jugadores/ranking", "/api/qa", "/api/prediccion", "/api/sync"]}
+    return {"name": APP_NAME, "status": "ok", "docs": "/docs", "endpoints": ["/api/clasificacion", "/api/goleadores", "/api/partidos", "/api/equipos", "/api/estadios", "/api/jugadores/ranking", "/api/partidos/mejores-jugadores", "/api/qa", "/api/prediccion", "/api/sync"]}
 
 @app.get("/health")
 def health() -> dict[str, str]:
@@ -69,6 +69,10 @@ def estadios() -> list[dict[str, Any]]:
 @app.get("/api/jugadores/ranking")
 def jugadores_ranking(metric: str, limit: int = 10) -> dict[str, Any]:
     return get_player_ranking(DATA.get("advanced_player_stats", {}), metric, limit)
+
+@app.get("/api/partidos/mejores-jugadores")
+def mejores_jugadores(limit: int = 20) -> dict[str, Any]:
+    return get_match_best_players(DATA.get("advanced_player_stats", {}), limit)
 
 @app.get("/api/metadata")
 def metadata() -> dict[str, Any]:
