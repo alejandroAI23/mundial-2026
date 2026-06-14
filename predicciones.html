@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predicciones IA · Mundial 2026</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#07111f; --card:#fff; --text:#101827; --muted:#667085; --brand:#0066ff; --green:#00b871; --border:rgba(16,24,40,.12); --shadow:0 20px 50px rgba(7,17,31,.16); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,system-ui,sans-serif; color:var(--text); background:linear-gradient(135deg,#07111f,#073c2e); min-height:100vh; }
+    .wrap { width:min(1180px,calc(100% - 32px)); margin:0 auto; }
+    nav { padding:22px 0; display:flex; justify-content:space-between; align-items:center; gap:14px; color:#fff; }
+    .brand { font-weight:900; font-size:1.1rem; display:flex; gap:10px; align-items:center; }
+    .badge { width:40px; height:40px; display:grid; place-items:center; border-radius:14px; background:linear-gradient(135deg,var(--brand),var(--green)); }
+    nav a { color:#fff; text-decoration:none; border:1px solid rgba(255,255,255,.22); padding:9px 13px; border-radius:999px; font-weight:800; background:rgba(255,255,255,.08); }
+    header { padding:34px 0 24px; color:#fff; }
+    h1 { margin:0; font-size:clamp(2rem,6vw,4.5rem); line-height:.98; letter-spacing:-.07em; max-width:850px; }
+    header p { max-width:780px; color:#d9edf7; line-height:1.65; font-size:1.1rem; }
+    .grid { display:grid; grid-template-columns:380px minmax(0,1fr); gap:22px; padding-bottom:56px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:26px; box-shadow:var(--shadow); padding:22px; }
+    h2,h3 { margin:0 0 12px; }
+    label { display:block; margin:14px 0 8px; font-weight:800; color:#344054; }
+    select, textarea { width:100%; border:1px solid var(--border); border-radius:16px; padding:14px; font:inherit; outline:none; background:#f8fafc; }
+    textarea { min-height:98px; resize:vertical; }
+    button { margin-top:16px; width:100%; min-height:52px; border:0; border-radius:18px; color:#fff; font-weight:900; cursor:pointer; background:linear-gradient(135deg,var(--brand),var(--green)); box-shadow:0 14px 30px rgba(0,102,255,.22); }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    .status { color:var(--muted); line-height:1.55; }
+    .matches { display:grid; gap:14px; }
+    .match-card { border:1px solid var(--border); border-radius:22px; padding:16px; background:#fff; display:grid; gap:10px; }
+    .match-title { font-weight:900; font-size:1.05rem; }
+    .match-meta { color:var(--muted); font-size:.92rem; }
+    .result-card { margin-top:16px; background:#f8fafc; border:1px solid var(--border); border-radius:22px; padding:18px; line-height:1.65; white-space:pre-wrap; }
+    .pill { display:inline-flex; align-items:center; gap:8px; font-size:.85rem; font-weight:900; padding:8px 11px; border-radius:999px; background:#ecfdf3; color:#067647; }
+    .dot { width:9px; height:9px; border-radius:999px; background:#12b76a; }
+    @media(max-width:900px){ nav{align-items:flex-start; flex-direction:column;} .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <nav class="wrap">
+    <div class="brand"><span class="badge">⚽</span> Mundial 2026 IA</div>
+    <div><a href="index.html">Calendario</a> <a href="chatbot.html">Chatbot</a></div>
+  </nav>
+
+  <header class="wrap">
+    <span class="pill"><span class="dot"></span> Backend Render conectado</span>
+    <h1>Predicciones y análisis con IA ligera</h1>
+    <p>Selecciona un partido o escribe una consulta. La página usa tu backend FastAPI para generar una respuesta y la presenta en cards responsive.</p>
+  </header>
+
+  <main class="wrap grid">
+    <section class="card">
+      <h2>Generar predicción</h2>
+      <p class="status" id="status">Cargando partidos desde Render…</p>
+
+      <label for="matchSelect">Partido</label>
+      <select id="matchSelect"><option value="">Cargando…</option></select>
+
+      <label for="customQuestion">Consulta personalizada</label>
+      <textarea id="customQuestion" placeholder="Ejemplo: Haz una predicción razonada para España vs Cape Verde"></textarea>
+
+      <button id="predictBtn">Generar análisis IA</button>
+      <div id="predictionResult" class="result-card" style="display:none"></div>
+    </section>
+
+    <section class="card">
+      <h2>Próximos partidos</h2>
+      <div id="matches" class="matches"></div>
+    </section>
+  </main>
+
+  <script src="assets/js/api-config.js"></script>
+  <script src="assets/js/ai-client.js"></script>
+  <script>
+    const statusEl = document.getElementById("status");
+    const matchSelect = document.getElementById("matchSelect");
+    const customQuestion = document.getElementById("customQuestion");
+    const predictBtn = document.getElementById("predictBtn");
+    const resultEl = document.getElementById("predictionResult");
+    const matchesEl = document.getElementById("matches");
+    let matches = [];
+
+    function esc(v){ return String(v ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[ch])); }
+    function teamName(m, side){ return side === "home" ? (m.home_team_name_en || m.home_team_label || "Local") : (m.away_team_name_en || m.away_team_label || "Visitante"); }
+    function isUpcoming(m){ return String(m.finished).toLowerCase() !== "true"; }
+
+    async function init(){
+      try {
+        await Mundial2026Api.health();
+        matches = await Mundial2026Api.partidos();
+        const upcoming = matches.filter(isUpcoming).slice(0, 20);
+        statusEl.textContent = `API conectada. ${upcoming.length} partidos próximos cargados.`;
+        matchSelect.innerHTML = upcoming.map((m, idx) => `<option value="${idx}">${esc(teamName(m,"home"))} vs ${esc(teamName(m,"away"))} · Grupo ${esc(m.group || "-")} · ${esc(m.local_date || "")}</option>`).join("");
+        matchesEl.innerHTML = upcoming.slice(0, 10).map((m, idx) => `
+          <article class="match-card">
+            <div class="match-title">${esc(teamName(m,"home"))} vs ${esc(teamName(m,"away"))}</div>
+            <div class="match-meta">Grupo ${esc(m.group || "-")} · Jornada ${esc(m.matchday || "-")} · ${esc(m.local_date || "Fecha pendiente")}</div>
+            <button type="button" onclick="selectMatch(${idx})">Analizar este partido</button>
+          </article>
+        `).join("");
+      } catch(error) {
+        statusEl.textContent = `No se pudo conectar con Render: ${error.message}`;
+        matchSelect.innerHTML = `<option value="">Sin datos</option>`;
+        matchesEl.innerHTML = `<div class="result-card">No se pudieron cargar los partidos.</div>`;
+      }
+    }
+
+    window.selectMatch = function(index){
+      matchSelect.value = index;
+      const m = matches.filter(isUpcoming)[index];
+      if (m) customQuestion.value = `Haz una predicción razonada para ${teamName(m,"home")} vs ${teamName(m,"away")}. Ten en cuenta clasificación, goles y estado del torneo.`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    predictBtn.addEventListener("click", async () => {
+      const upcoming = matches.filter(isUpcoming);
+      const selected = upcoming[Number(matchSelect.value || 0)];
+      const home = selected ? teamName(selected,"home") : "";
+      const away = selected ? teamName(selected,"away") : "";
+      const question = customQuestion.value.trim() || `Haz una predicción razonada para ${home} vs ${away}.`;
+      predictBtn.disabled = true;
+      resultEl.style.display = "block";
+      resultEl.textContent = "Generando análisis con el backend…";
+      try {
+        let response;
+        try {
+          response = await Mundial2026Api.prediccion({ home_team: home, away_team: away, match_id: selected?.id, question });
+        } catch {
+          response = await Mundial2026Api.qa(question);
+        }
+        resultEl.textContent = Mundial2026Api.getAnswerText(response);
+      } catch(error) {
+        resultEl.textContent = `Error al generar predicción: ${error.message}`;
+      } finally {
+        predictBtn.disabled = false;
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
