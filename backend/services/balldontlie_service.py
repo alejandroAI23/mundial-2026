@@ -1,17 +1,23 @@
 from __future__ import annotations
 
-import os
-import requests
+from .advanced_player_stats_service import (
+    build_advanced_player_stats,
+    get_player_ranking,
+    normalize_metric,
+)
+from .balldontlie_client import (
+    BalldontlieAPIError,
+    BalldontlieConfigError,
+    fetch_paginated,
+    is_balldontlie_configured,
+)
 
-API_KEY = os.getenv("BALLDONTLIE_API_KEY", "")
-HEADER_NAME = "Authori" + "zation"
-
-
-class ApiKeyAuth(requests.auth.AuthBase):
-    def __call__(self, request):
-        request.headers[HEADER_NAME] = API_KEY
-        return request
-
-
-def ping() -> dict:
-    return requests.get("https://api.balldontlie.io/fifa/worldcup/v1/teams", auth=ApiKeyAuth(), timeout=10).json()
+__all__ = [
+    "BalldontlieAPIError",
+    "BalldontlieConfigError",
+    "build_advanced_player_stats",
+    "fetch_paginated",
+    "get_player_ranking",
+    "is_balldontlie_configured",
+    "normalize_metric",
+]
