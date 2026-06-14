@@ -4,6 +4,12 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
+from .balldontlie_service import (
+    BalldontlieAPIError,
+    BalldontlieConfigError,
+    build_advanced_player_stats,
+    is_balldontlie_configured,
+)
 from .worldcup_client import get_games, get_groups, get_stadiums, get_teams
 
 
@@ -27,13 +33,7 @@ def _status(game: dict[str, Any]) -> str:
 
 
 def _team_name(team: dict[str, Any]) -> str:
-    return (
-        team.get("name_en")
-        or team.get("name")
-        or team.get("team")
-        or team.get("team_name")
-        or "Equipo pendiente"
-    )
+    return team.get("name_en") or team.get("name") or team.get("team") or team.get("team_name") or "Equipo pendiente"
 
 
 def _team_group(team: dict[str, Any]) -> str:
@@ -50,19 +50,7 @@ def build_classification_from_games(games: list[dict[str, Any]], teams: list[dic
     def ensure(team_name: str, group: str = "", flag: str = "") -> dict[str, Any]:
         key = (group or "Pendiente", team_name)
         if key not in table:
-            table[key] = {
-                "team": team_name,
-                "group": group or "Pendiente",
-                "played": 0,
-                "wins": 0,
-                "draws": 0,
-                "losses": 0,
-                "goals_for": 0,
-                "goals_against": 0,
-                "goal_difference": 0,
-                "points": 0,
-                "flag": flag,
-            }
+            table[key] = {"team": team_name, "group": group or "Pendiente", "played": 0, "wins": 0, "draws": 0, "losses": 0, "goals_for": 0, "goals_against": 0, "goal_difference": 0, "points": 0, "flag": flag}
         elif flag and not table[key].get("flag"):
             table[key]["flag"] = flag
         return table[key]
@@ -77,42 +65,25 @@ def build_classification_from_games(games: list[dict[str, Any]], teams: list[dic
             continue
         home = game.get("home_team_name_en") or game.get("home_team") or game.get("home") or "Local pendiente"
         away = game.get("away_team_name_en") or game.get("away_team") or game.get("away") or "Visitante pendiente"
-        home_team = team_by_id.get(str(game.get("home_team_id")), {})
-        away_team = team_by_id.get(str(game.get("away_team_id")), {})
-        home_row = ensure(home, group, _flag(home_team))
-        away_row = ensure(away, group, _flag(away_team))
-
+        home_row = ensure(home, group, _flag(team_by_id.get(str(game.get("home_team_id")), {})))
+        away_row = ensure(away, group, _flag(team_by_id.get(str(game.get("away_team_id")), {})))
         if _status(game) != "final":
             continue
-
-        hs = _safe_int(game.get("home_score"))
-        aw = _safe_int(game.get("away_score"))
-        home_row["played"] += 1
-        away_row["played"] += 1
-        home_row["goals_for"] += hs
-        home_row["goals_against"] += aw
-        away_row["goals_for"] += aw
-        away_row["goals_against"] += hs
-
+        hs, aw = _safe_int(game.get("home_score")), _safe_int(game.get("away_score"))
+        home_row["played"] += 1; away_row["played"] += 1
+        home_row["goals_for"] += hs; home_row["goals_against"] += aw
+        away_row["goals_for"] += aw; away_row["goals_against"] += hs
         if hs > aw:
-            home_row["wins"] += 1
-            home_row["points"] += 3
-            away_row["losses"] += 1
+            home_row["wins"] += 1; home_row["points"] += 3; away_row["losses"] += 1
         elif aw > hs:
-            away_row["wins"] += 1
-            away_row["points"] += 3
-            home_row["losses"] += 1
+            away_row["wins"] += 1; away_row["points"] += 3; home_row["losses"] += 1
         else:
-            home_row["draws"] += 1
-            away_row["draws"] += 1
-            home_row["points"] += 1
-            away_row["points"] += 1
+            home_row["draws"] += 1; away_row["draws"] += 1; home_row["points"] += 1; away_row["points"] += 1
 
     rows = []
     for row in table.values():
         row["goal_difference"] = row["goals_for"] - row["goals_against"]
         rows.append(row)
-
     rows.sort(key=lambda r: (r["group"], -r["points"], -r["goal_difference"], -r["goals_for"], r["team"]))
     return rows
 
@@ -124,16 +95,12 @@ def _parse_scorer_tokens(raw: Any) -> list[str]:
         return [str(x).strip() for x in raw if str(x).strip()]
     if isinstance(raw, dict):
         return [str(v).strip() for v in raw.values() if str(v).strip()]
-    text = str(raw)
-    text = text.replace("{", "").replace("}", "").replace('"', "").replace("'", "")
-    text = text.replace("[", "").replace("]", "")
-    parts = re.split(r",|;|\n", text)
+    text = str(raw).replace("{", "").replace("}", "").replace('"', "").replace("'", "").replace("[", "").replace("]", "")
     out = []
-    for part in parts:
+    for part in re.split(r",|;|\n", text):
         part = part.strip()
         if not part or part.lower() == "null":
             continue
-        # Common formats: Player 12', Player: 45, 1: Player
         part = re.sub(r"^\d+\s*[:\-]\s*", "", part)
         part = re.sub(r"\s*\(?\d{1,3}['’]?\)?\s*$", "", part).strip()
         if part:
@@ -143,11 +110,8 @@ def _parse_scorer_tokens(raw: Any) -> list[str]:
 
 def build_top_scorers(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
     scorers: dict[tuple[str, str], int] = {}
-
     def add(player: str, team: str) -> None:
-        key = (player, team)
-        scorers[key] = scorers.get(key, 0) + 1
-
+        scorers[(player, team)] = scorers.get((player, team), 0) + 1
     for game in games:
         home_team = game.get("home_team_name_en") or "Equipo local"
         away_team = game.get("away_team_name_en") or "Equipo visitante"
@@ -155,82 +119,53 @@ def build_top_scorers(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
             add(player, home_team)
         for player in _parse_scorer_tokens(game.get("away_scorers") or game.get("away_goals")):
             add(player, away_team)
-
-        # Optional structured goals format.
         for goal in game.get("goals", []) if isinstance(game.get("goals"), list) else []:
             player = goal.get("scorer") or goal.get("player")
             team = goal.get("team") or goal.get("team_name") or goal.get("teamName")
             if player and team:
                 add(str(player), str(team))
-
-    rows = [
-        {"player": player, "team": team, "goals": goals, "age": None, "position": None}
-        for (player, team), goals in scorers.items()
-    ]
+    rows = [{"player": player, "team": team, "goals": goals, "age": None, "position": None} for (player, team), goals in scorers.items()]
     rows.sort(key=lambda r: (-r["goals"], r["player"]))
     return rows
 
 
 def build_prediction(classification: list[dict[str, Any]], team_a: str, team_b: str) -> dict[str, Any]:
     by_name = {str(r.get("team", "")).lower(): r for r in classification}
-    a = by_name.get(team_a.lower())
-    b = by_name.get(team_b.lower())
+    a, b = by_name.get(team_a.lower()), by_name.get(team_b.lower())
     if not a or not b:
-        return {
-            "team_a": team_a,
-            "team_b": team_b,
-            "winner": None,
-            "probability": 0.5,
-            "explanation": "No hay datos suficientes de clasificación para calcular una predicción.",
-        }
-
+        return {"team_a": team_a, "team_b": team_b, "winner": None, "probability": 0.5, "explanation": "No hay datos suficientes de clasificación para calcular una predicción."}
     def score(row: dict[str, Any]) -> float:
-        return (
-            float(row.get("points", 0)) * 3
-            + float(row.get("goal_difference", 0)) * 1.2
-            + float(row.get("goals_for", 0)) * 0.6
-            - float(row.get("goals_against", 0)) * 0.4
-        )
-
-    sa, sb = score(a), score(b)
-    diff = sa - sb
-    probability = 1 / (1 + pow(2.71828, -diff / 8))
+        return float(row.get("points", 0)) * 3 + float(row.get("goal_difference", 0)) * 1.2 + float(row.get("goals_for", 0)) * 0.6 - float(row.get("goals_against", 0)) * 0.4
+    probability = 1 / (1 + pow(2.71828, -(score(a) - score(b)) / 8))
     winner = team_a if probability >= 0.5 else team_b
     winner_probability = probability if probability >= 0.5 else 1 - probability
-    return {
-        "team_a": team_a,
-        "team_b": team_b,
-        "winner": winner,
-        "probability": round(float(winner_probability), 3),
-        "explanation": "Predicción heurística basada en puntos, diferencia de goles y goles a favor. No es una apuesta ni una garantía.",
-    }
+    return {"team_a": team_a, "team_b": team_b, "winner": winner, "probability": round(float(winner_probability), 3), "explanation": "Predicción heurística basada en puntos, diferencia de goles y goles a favor. No es una apuesta ni una garantía."}
+
+
+def _try_build_advanced_player_stats() -> tuple[dict[str, Any], str]:
+    if not is_balldontlie_configured():
+        return {}, "skipped: BALLDONTLIE_API_KEY no configurada"
+    try:
+        return build_advanced_player_stats(), "ok"
+    except (BalldontlieAPIError, BalldontlieConfigError) as exc:
+        return {}, f"unavailable: {exc}"
+    except Exception as exc:
+        return {}, f"error: {exc}"
 
 
 def update_all_data() -> dict[str, Any]:
-    games = get_games()
-    teams = get_teams()
-    stadiums = get_stadiums()
-    # groups endpoint is kept in metadata in case you want to inspect it.
+    games, teams, stadiums = get_games(), get_teams(), get_stadiums()
     try:
         groups = get_groups()
     except Exception:
         groups = []
-
-    classification = build_classification_from_games(games, teams)
-    top_scorers = build_top_scorers(games)
-
+    advanced_player_stats, advanced_status = _try_build_advanced_player_stats()
     return {
-        "classification": classification,
-        "top_scorers": top_scorers,
+        "classification": build_classification_from_games(games, teams),
+        "top_scorers": build_top_scorers(games),
         "matches": games,
         "teams": teams,
         "stadiums": stadiums,
-        "metadata": {
-            "source": "worldcup26.ir",
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-            "groups_raw_count": len(groups) if isinstance(groups, list) else None,
-            "matches_count": len(games),
-            "teams_count": len(teams),
-            "stadiums_count": len(stadiums),
-        },
+        "advanced_player_stats": advanced_player_stats,
+        "metadata": {"source": "worldcup26.ir", "advanced_source": "balldontlie", "advanced_player_stats_status": advanced_status, "updated_at": datetime.now(timezone.utc).isoformat(), "groups_raw_count": len(groups) if isinstance(groups, list) else None, "matches_count": len(games), "teams_count": len(teams), "stadiums_count": len(stadiums)},
     }
