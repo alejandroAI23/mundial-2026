@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from .advanced_player_stats_service import (
+# Compatibilidad temporal: el código antiguo importaba balldontlie_service.
+# Desde ahora la fuente avanzada principal es API-FOOTBALL.
+from .apifootball_service import (
+    APIFootballAPIError as BalldontlieAPIError,
+    APIFootballConfigError as BalldontlieConfigError,
     build_advanced_player_stats,
     get_player_ranking,
-    normalize_metric,
+    is_api_football_configured as is_balldontlie_configured,
 )
-from .balldontlie_client import (
-    BalldontlieAPIError,
-    BalldontlieConfigError,
-    fetch_paginated,
-    is_balldontlie_configured,
-)
+from .apifootball_client import fetch_paginated
+from .apifootball_advanced_utils import normalize_metric
 
 __all__ = [
     "BalldontlieAPIError",
