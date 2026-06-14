@@ -1,0 +1,23 @@
+name: Sync API Football Cache
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'
+
+jobs:
+  sync-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call backend sync endpoint
+        env:
+          SYNC_BASE_URL: ${{ secrets.BACKEND_SYNC_URL }}
+        run: |
+          if [ -z "$SYNC_BASE_URL" ]; then
+            echo "Missing BACKEND_SYNC_URL repository secret"
+            exit 1
+          fi
+
+          echo "Calling backend sync endpoint..."
+          curl --fail --silent --show-error --request POST "$SYNC_BASE_URL/api/sync"
+          echo "Backend cache sync completed"
