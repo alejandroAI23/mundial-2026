@@ -8,6 +8,6 @@ services:
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: AUTO_SYNC_ON_STARTUP
-        value: "false"
+        value: "true"
       - key: CORS_ORIGINS
         value: "https://alejandroai23.github.io"
