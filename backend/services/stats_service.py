@@ -4,11 +4,11 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
-from .balldontlie_service import (
-    BalldontlieAPIError,
-    BalldontlieConfigError,
+from .apifootball_service import (
+    APIFootballAPIError,
+    APIFootballConfigError,
     build_advanced_player_stats,
-    is_balldontlie_configured,
+    is_api_football_configured,
 )
 from .worldcup_client import get_games, get_groups, get_stadiums, get_teams
 
@@ -143,11 +143,11 @@ def build_prediction(classification: list[dict[str, Any]], team_a: str, team_b: 
 
 
 def _try_build_advanced_player_stats() -> tuple[dict[str, Any], str]:
-    if not is_balldontlie_configured():
-        return {}, "skipped: BALLDONTLIE_API_KEY no configurada"
+    if not is_api_football_configured():
+        return {}, "skipped: API_FOOTBALL_KEY no configurada"
     try:
         return build_advanced_player_stats(), "ok"
-    except (BalldontlieAPIError, BalldontlieConfigError) as exc:
+    except (APIFootballAPIError, APIFootballConfigError) as exc:
         return {}, f"unavailable: {exc}"
     except Exception as exc:
         return {}, f"error: {exc}"
@@ -167,5 +167,5 @@ def update_all_data() -> dict[str, Any]:
         "teams": teams,
         "stadiums": stadiums,
         "advanced_player_stats": advanced_player_stats,
-        "metadata": {"source": "worldcup26.ir", "advanced_source": "balldontlie", "advanced_player_stats_status": advanced_status, "updated_at": datetime.now(timezone.utc).isoformat(), "groups_raw_count": len(groups) if isinstance(groups, list) else None, "matches_count": len(games), "teams_count": len(teams), "stadiums_count": len(stadiums)},
+        "metadata": {"source": "worldcup26.ir", "advanced_source": "api-football", "advanced_player_stats_status": advanced_status, "updated_at": datetime.now(timezone.utc).isoformat(), "groups_raw_count": len(groups) if isinstance(groups, list) else None, "matches_count": len(games), "teams_count": len(teams), "stadiums_count": len(stadiums)},
     }
