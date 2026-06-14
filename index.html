@@ -305,6 +305,29 @@
       border: 1px solid var(--line);
       font-size: 1.45rem;
       box-shadow: inset 0 -8px 16px rgba(15,23,42,.04);
+      overflow: hidden;
+    }
+
+    .flag-img {
+      width: 24px;
+      height: 18px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.15);
+      border: 1px solid rgba(15,23,42,0.08);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .flag .flag-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 0;
+      border: none;
+      box-shadow: none;
     }
 
     .team-name {
@@ -568,19 +591,24 @@
       search: ""
     };
 
-    const FLAGS = {
-      "Mexico":"🇲🇽", "South Africa":"🇿🇦", "South Korea":"🇰🇷", "Czech Republic":"🇨🇿", "Czechia":"🇨🇿",
-      "Canada":"🇨🇦", "Bosnia and Herzegovina":"🇧🇦", "Qatar":"🇶🇦", "Switzerland":"🇨🇭",
-      "Brazil":"🇧🇷", "Morocco":"🇲🇦", "Haiti":"🇭🇹", "Scotland":"🏴",
-      "United States":"🇺🇸", "USA":"🇺🇸", "Paraguay":"🇵🇾", "Australia":"🇦🇺", "Turkey":"🇹🇷",
-      "Germany":"🇩🇪", "Curaçao":"🇨🇼", "Curacao":"🇨🇼", "CuraÃ§ao":"🇨🇼", "Ivory Coast":"🇨🇮", "Ecuador":"🇪🇨",
-      "Netherlands":"🇳🇱", "Japan":"🇯🇵", "Sweden":"🇸🇪", "Tunisia":"🇹🇳",
-      "Belgium":"🇧🇪", "Egypt":"🇪🇬", "Iran":"🇮🇷", "New Zealand":"🇳🇿",
-      "Spain":"🇪🇸", "Cape Verde":"🇨🇻", "Saudi Arabia":"🇸🇦", "Uruguay":"🇺🇾",
-      "France":"🇫🇷", "Senegal":"🇸🇳", "Iraq":"🇮🇶", "Norway":"🇳🇴",
-      "Argentina":"🇦🇷", "Algeria":"🇩🇿", "Austria":"🇦🇹", "Jordan":"🇯🇴",
-      "Portugal":"🇵🇹", "Democratic Republic of the Congo":"🇨🇩", "DR Congo":"🇨🇩", "Uzbekistan":"🇺🇿", "Colombia":"🇨🇴",
-      "England":"🏴", "Croatia":"🇭🇷", "Ghana":"🇬🇭", "Panama":"🇵🇦"
+    const COUNTRY_CODES = {
+      "Mexico":"mx", "South Africa":"za", "South Korea":"kr", "Czech Republic":"cz", "Czechia":"cz",
+      "Canada":"ca", "Bosnia and Herzegovina":"ba", "Qatar":"qa", "Switzerland":"ch", "Brazil":"br",
+      "Morocco":"ma", "Haiti":"ht", "Scotland":"gb-sct", "United States":"us", "USA":"us", "US":"us",
+      "Paraguay":"py", "Australia":"au", "Turkey":"tr", "Türkiye":"tr", "Turkiye":"tr", "Germany":"de", "Curaçao":"cw", "Curacao":"cw",
+      "Ivory Coast":"ci", "Ecuador":"ec", "Netherlands":"nl", "Japan":"jp", "Sweden":"se", "Tunisia":"tn",
+      "Belgium":"be", "Egypt":"eg", "Iran":"ir", "New Zealand":"nz", "Spain":"es", "Cape Verde":"cv",
+      "Saudi Arabia":"sa", "Uruguay":"uy", "France":"fr", "Senegal":"sn", "Iraq":"iq", "Norway":"no",
+      "Argentina":"ar", "Algeria":"dz", "Austria":"at", "Jordan":"jo", "Portugal":"pt",
+      "Democratic Republic of the Congo":"cd", "DR Congo":"cd", "Uzbekistan":"uz", "Colombia":"co",
+      "England":"gb-eng", "Croatia":"hr", "Ghana":"gh", "Panama":"pa", "Peru":"pe", "Chile":"cl",
+      "Venezuela":"ve", "Bolivia":"bo", "Italy":"it", "Wales":"gb-wls", "Honduras":"hn",
+      "Costa Rica":"cr", "Jamaica":"jm", "El Salvador":"sv", "Guatemala":"gt", "Cameroon":"cm",
+      "Nigeria":"ng", "Senegal":"sn", "Morocco":"ma", "Tunisia":"tn", "Algeria":"dz", "Egypt":"eg",
+      "Ivory Coast":"ci", "Ghana":"gh", "Marruecos": "ma", "Corea del Sur": "kr", "Suiza": "ch",
+      "Brasil": "br", "Estados Unidos": "us", "Usa": "us", "Alemania": "de", "Países Bajos": "nl",
+      "Japón": "jp", "Bélgica": "be", "Irán": "ir", "España": "es", "Espana": "es", "Francia": "fr",
+      "Inglaterra": "gb-eng", "Croacia": "hr", "Panamá": "pa"
     };
 
     const TEAM_ALIASES = {
@@ -632,7 +660,24 @@
 
     function teamHome(match) { return fixText(match.home_team_name_en || match.home_team_label || match.home_team || "Por definir"); }
     function teamAway(match) { return fixText(match.away_team_name_en || match.away_team_label || match.away_team || "Por definir"); }
-    function flag(name) { return FLAGS[name] || "🏳️"; }
+
+    function flag(name) {
+      if (!name) return "🏳️";
+      const key = String(fixText(name)).trim().toLowerCase();
+      let code = "";
+      for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+        if (k.toLowerCase() === key) { code = v; break; }
+      }
+      if (!code) {
+        for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+          if (key.includes(k.toLowerCase()) || k.toLowerCase().includes(key)) { code = v; break; }
+        }
+      }
+      if (code) {
+        return `<img src="https://flagcdn.com/32x24/${code}.png" class="flag-img" alt="${name}" onerror="this.outerHTML='🏳️'">`;
+      }
+      return "🏳️";
+    }
 
     function parseDate(value) {
       if (!value) return null;

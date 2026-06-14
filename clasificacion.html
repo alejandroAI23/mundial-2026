@@ -3,55 +3,816 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clasificación Mundial 2026</title>
+  <title>Mundial 2026 | Clasificación de Grupos e IA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="assets/js/api-config.js"></script>
   <style>
-    :root { --bg:#f4f8ff; --text:#0f172a; --muted:#64748b; --line:rgba(15,23,42,.1); --blue:#1455d9; --green:#0ea66b; --shadow:0 18px 50px rgba(15,23,42,.11); }
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#eaf2ff,#fff);color:var(--text)}
-    .top{padding:28px clamp(18px,5vw,70px);background:linear-gradient(135deg,#05225e,#08775c);color:#fff}.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.brand{font-size:24px;font-weight:900;text-decoration:none;color:#fff}.links{display:flex;gap:10px;flex-wrap:wrap}.links a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);padding:10px 14px;border-radius:999px;font-weight:800}.links a.active,.links a:hover{background:rgba(255,255,255,.22)}.hero{margin-top:44px;max-width:900px}.hero h1{font-size:clamp(34px,6vw,64px);line-height:1;margin:0 0 12px;letter-spacing:-.06em}.hero p{color:rgba(255,255,255,.82);font-size:18px;line-height:1.5}.wrap{width:min(1280px,calc(100% - 28px));margin:-34px auto 48px;display:grid;gap:18px}.panel{background:#fff;border:1px solid rgba(255,255,255,.8);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}.bar{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.bar h2{margin:0;font-size:28px;letter-spacing:-.04em}.bar button{border:0;border-radius:999px;background:linear-gradient(135deg,var(--green),#12b981);color:#fff;font-weight:900;padding:12px 16px;cursor:pointer}.groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px}.group-card{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}.group-title{display:flex;justify-content:space-between;padding:16px 18px;background:#f8fafc;border-bottom:1px solid var(--line);font-weight:900}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:center;font-size:14px}th{color:var(--muted);background:#fbfdff;font-size:12px;text-transform:uppercase;letter-spacing:.04em}td.team{text-align:left;font-weight:900}.pos{font-weight:900;color:var(--blue)}.empty,.loading,.error{padding:28px;text-align:center;color:var(--muted);font-weight:800}.error{color:#991b1b;background:#fff1f2}@media(max-width:820px){.groups{grid-template-columns:1fr;padding:12px}.top{padding-bottom:76px}.wrap{margin-top:-48px}.links a{font-size:13px}.bar{padding:18px}}
+    :root {
+      --bg: #eef5fb;
+      --panel: rgba(255, 255, 255, .92);
+      --panel-solid: #ffffff;
+      --text: #111827;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, .10);
+      --blue: #0f5fd7;
+      --blue-2: #e9f2ff;
+      --green: #00a870;
+      --green-2: #e9fff6;
+      --red: #dc2626;
+      --orange: #f97316;
+      --shadow: 0 24px 70px rgba(15, 23, 42, .13);
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(14, 165, 233, .30), transparent 28%),
+        radial-gradient(circle at 92% 0%, rgba(16, 185, 129, .33), transparent 30%),
+        linear-gradient(180deg, #0f4d6f 0, #096347 210px, var(--bg) 210px, #fff 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+      margin-bottom: 34px;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 999px;
+      background: rgba(5, 23, 42, .44);
+      backdrop-filter: blur(18px);
+      color: #fff;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 165px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #0f5fd7);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: rgba(255,255,255,.82);
+      font-weight: 800;
+      font-size: .9rem;
+      transition: .18s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #052e2b;
+      background: #fff;
+    }
+
+    .api-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: .85rem;
+      background: rgba(255, 255, 255, .14);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .api-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 0 6px rgba(251,191,36,.16);
+    }
+
+    .api-pill.ok .api-dot { background: #22c55e; box-shadow: 0 0 0 6px rgba(34,197,94,.18); }
+    .api-pill.error .api-dot { background: #ef4444; box-shadow: 0 0 0 6px rgba(239,68,68,.18); }
+
+    .hero {
+      color: #fff;
+      margin: 18px 0 30px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 4.5rem);
+      line-height: .92;
+      letter-spacing: -.07em;
+      font-weight: 900;
+    }
+
+    .hero p {
+      max-width: 820px;
+      margin: 14px 0 0;
+      color: rgba(255,255,255,.82);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.5;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(360px, .95fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 26px 28px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 18px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3vw, 2.25rem);
+      letter-spacing: -.05em;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .card-header p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .content { padding: 22px 28px 30px; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 18px;
+      padding: 15px 17px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    button, .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 17px;
+      font-weight: 900;
+      cursor: pointer;
+      color: #0f2850;
+      background: #edf3f9;
+      border: 1px solid var(--line);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    button:hover, .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(15,23,42,.10); }
+    .btn-primary { background: linear-gradient(135deg, #13b981, #00a870); color: white; border: 0; }
+
+    /* Groups Grid styling */
+    .groups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .group-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(15,23,42,.04);
+    }
+
+    .group-title {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 18px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--line);
+      font-weight: 900;
+      font-size: 1.05rem;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    th, td {
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    th {
+      color: var(--muted);
+      background: #fbfdff;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    td.team {
+      text-align: left;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pos { font-weight: 900; color: var(--blue); }
+
+    /* Flags inside classification */
+    .table-flag {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+    }
+
+    .table-flag img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .flag-img {
+      width: 24px;
+      height: 18px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.15);
+      border: 1px solid rgba(15,23,42,0.08);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    /* Chat styling */
+    .chat-card { position: sticky; top: 88px; }
+
+    .chat-window {
+      height: 385px;
+      overflow: auto;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .msg {
+      max-width: 88%;
+      padding: 13px 15px;
+      border-radius: 18px;
+      line-height: 1.45;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(15,23,42,.08);
+    }
+
+    .msg.bot { align-self: flex-start; background: #fff; border: 1px solid var(--line); }
+    .msg.user { align-self: flex-end; color: #0745a6; background: #dcecff; }
+    .msg small { display: block; color: var(--muted); font-weight: 800; margin-bottom: 7px; }
+
+    .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .quick-row button {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .chat-form input {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 15px;
+      outline: none;
+      font-size: 1rem;
+      min-width: 0;
+    }
+
+    .loading, .empty, .error-box {
+      padding: 34px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .error-box { color: #991b1b; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 18px; }
+
+    @media (max-width: 1050px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .chat-card { position: static; }
+      .groups { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 20px, 1440px); padding-top: 10px; }
+      .top-nav { border-radius: 24px; align-items: flex-start; flex-direction: column; }
+      .brand { width: 100%; justify-content: space-between; }
+      .nav-links { width: 100%; justify-content: flex-start; }
+      .nav-links a { font-size: .82rem; padding: 9px 10px; }
+      .card-header { padding: 22px 20px 16px; flex-direction: column; }
+      .content { padding: 18px 20px 24px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .chat-form { grid-template-columns: 1fr; }
+      .hero { margin-top: 10px; }
+    }
   </style>
 </head>
 <body>
-  <header class="top">
-    <nav class="nav">
-      <a class="brand" href="index.html">⚽ Mundial 2026</a>
-      <div class="links" aria-label="Navegación principal">
+  <div class="page">
+    <nav class="top-nav">
+      <div class="brand">
+        <span class="brand-badge">⚽</span>
+        <span>Mundial 2026</span>
+      </div>
+      <div class="nav-links" aria-label="Navegación principal">
         <a href="inicio.html">Inicio</a>
         <a href="index.html">Resultados + Chatbot</a>
         <a href="clasificacion.html" class="active">Clasificación</a>
         <a href="plantillas.html">Plantillas</a>
         <a href="predicciones.html">Predicciones</a>
       </div>
+      <div id="apiStatus" class="api-pill"><span class="api-dot"></span><span>Conectando API</span></div>
     </nav>
-    <section class="hero"><h1>Clasificación por grupos</h1><p>Página separada para consultar la tabla de posiciones. La pantalla principal queda reservada para resultados y chatbot.</p></section>
-  </header>
-  <main class="wrap">
-    <section class="panel">
-      <div class="bar"><h2>Grupos</h2><button id="reloadBtn">Actualizar clasificación</button></div>
-      <div id="groups" class="groups"><div class="loading">Cargando clasificación desde Render...</div></div>
-    </section>
-  </main>
+
+    <header class="hero">
+      <h1>Posiciones del Mundial 2026</h1>
+      <p>Consulta las tablas de clasificación de todos los grupos y pregunta a nuestra IA sobre los lideratos y puntos.</p>
+    </header>
+
+    <main class="main-grid">
+      <section class="card" aria-labelledby="classificationTitle">
+        <div class="card-header">
+          <div>
+            <h2 id="classificationTitle">Clasificación por Grupos</h2>
+            <p>Grupos oficiales actualizados desde Render de forma persistente.</p>
+          </div>
+        </div>
+        <div class="content">
+          <div class="toolbar">
+            <input id="searchInput" class="search" type="search" placeholder="Filtrar por selección o grupo..." />
+            <button id="refreshBtn" class="btn-primary" type="button">Actualizar</button>
+          </div>
+          <div id="groups" class="groups">
+            <div class="loading">Cargando clasificación desde Render...</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card chat-card" aria-labelledby="chatTitle">
+        <div class="card-header">
+          <div>
+            <h2 id="chatTitle">Consulta de Grupos IA</h2>
+            <p>Pregunta sobre puntos, líderes de grupos o clasificados.</p>
+          </div>
+        </div>
+        <div class="content">
+          <div id="chatWindow" class="chat-window" aria-live="polite">
+            <div class="msg bot">Hola, soy el asistente de la clasificación. Puedo decirte quién lidera un grupo, los puntos de un equipo o si ya tienen partidos ganados. ¡Pregúntame!</div>
+          </div>
+          <div class="quick-row">
+            <button type="button" class="quick" data-q="¿Cómo va el grupo de España?">Grupo de España</button>
+            <button type="button" class="quick" data-q="¿Quién lidera el Grupo A?">Líder del Grupo A</button>
+            <button type="button" class="quick" data-q="¿Qué equipos están en el Mundial?">Equipos cargados</button>
+          </div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" type="text" placeholder="Ej: ¿Quién lidera el grupo de México?" autocomplete="off" />
+            <button class="btn-primary" type="submit">Preguntar</button>
+          </form>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="assets/js/api-config.js"></script>
   <script>
     const API_BASE = (window.MUNDIAL_2026_API_BASE || "https://mundial-2026-api-8dvp.onrender.com").replace(/\/$/, "");
-    const groupsEl = document.querySelector("#groups");
-    async function apiGet(path){const res=await fetch(`${API_BASE}${path}`);if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json();}
-    function groupBy(rows,key){return rows.reduce((acc,row)=>{const k=row[key]||"-";(acc[k] ||= []).push(row);return acc;},{});}    
-    function teamName(row){return row.team || row.name || row.team_name || row.country || "Selección";}
-    function num(row,...keys){for(const k of keys){if(row[k]!==undefined && row[k]!==null && row[k]!=="") return Number(row[k]) || 0;} return 0;}
-    function sortRows(rows){return rows.sort((a,b)=> num(b,"points")-num(a,"points") || num(b,"goal_difference","gd")-num(a,"goal_difference","gd") || num(b,"goals_for","gf")-num(a,"goals_for","gf"));}
-    function render(rows){
-      if(!rows.length){groupsEl.innerHTML='<div class="empty">No hay clasificación disponible. Ejecuta POST /api/sync desde Swagger.</div>';return;}
-      const grouped = groupBy(rows,"group");
-      groupsEl.innerHTML = Object.keys(grouped).sort().map(group=>{
+
+    const state = {
+      classification: [],
+      search: ""
+    };
+
+    const COUNTRY_CODES = {
+      "Mexico":"mx", "South Africa":"za", "South Korea":"kr", "Czech Republic":"cz", "Czechia":"cz",
+      "Canada":"ca", "Bosnia and Herzegovina":"ba", "Qatar":"qa", "Switzerland":"ch", "Brazil":"br",
+      "Morocco":"ma", "Haiti":"ht", "Scotland":"gb-sct", "United States":"us", "USA":"us", "US":"us",
+      "Paraguay":"py", "Australia":"au", "Turkey":"tr", "Türkiye":"tr", "Turkiye":"tr", "Germany":"de", "Curaçao":"cw", "Curacao":"cw",
+      "Ivory Coast":"ci", "Ecuador":"ec", "Netherlands":"nl", "Japan":"jp", "Sweden":"se", "Tunisia":"tn",
+      "Belgium":"be", "Egypt":"eg", "Iran":"ir", "New Zealand":"nz", "Spain":"es", "Cape Verde":"cv",
+      "Saudi Arabia":"sa", "Uruguay":"uy", "France":"fr", "Senegal":"sn", "Iraq":"iq", "Norway":"no",
+      "Argentina":"ar", "Algeria":"dz", "Austria":"at", "Jordan":"jo", "Portugal":"pt",
+      "Democratic Republic of the Congo":"cd", "DR Congo":"cd", "Uzbekistan":"uz", "Colombia":"co",
+      "England":"gb-eng", "Croatia":"hr", "Ghana":"gh", "Panama":"pa", "Peru":"pe", "Chile":"cl",
+      "Venezuela":"ve", "Bolivia":"bo", "Italy":"it", "Wales":"gb-wls", "Honduras":"hn",
+      "Costa Rica":"cr", "Jamaica":"jm", "El Salvador":"sv", "Guatemala":"gt", "Cameroon":"cm",
+      "Nigeria":"ng", "Senegal":"sn", "Morocco":"ma", "Tunisia":"tn", "Algeria":"dz", "Egypt":"eg",
+      "Ivory Coast":"ci", "Ghana":"gh", "Marruecos": "ma", "Corea del Sur": "kr", "Suiza": "ch",
+      "Brasil": "br", "Estados Unidos": "us", "Usa": "us", "Alemania": "de", "Países Bajos": "nl",
+      "Japón": "jp", "Bélgica": "be", "Irán": "ir", "España": "es", "Espana": "es", "Francia": "fr",
+      "Inglaterra": "gb-eng", "Croacia": "hr", "Panamá": "pa"
+    };
+
+    function fixText(value) {
+      if (value == null) return "";
+      return String(value)
+        .replaceAll("Ã¡", "á").replaceAll("Ã©", "é").replaceAll("Ã­", "í").replaceAll("Ã³", "ó").replaceAll("Ãº", "ú")
+        .replaceAll("Ã±", "ñ").replaceAll("Ã§", "ç").replaceAll("Ä‡", "ć").replaceAll("ÄÃ­", "í")
+        .replaceAll("â", "").replaceAll("\u0000", "").trim();
+    }
+
+    function flag(name) {
+      if (!name) return "🏳️";
+      const key = String(fixText(name)).trim().toLowerCase();
+      let code = "";
+      for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+        if (k.toLowerCase() === key) { code = v; break; }
+      }
+      if (!code) {
+        for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+          if (key.includes(k.toLowerCase()) || k.toLowerCase().includes(key)) { code = v; break; }
+        }
+      }
+      if (code) {
+        return `<img src="https://flagcdn.com/32x24/${code}.png" class="flag-img" alt="${name}" onerror="this.outerHTML='🏳️'">`;
+      }
+      return "🏳️";
+    }
+
+    function teamFlagBadge(name) {
+      if (!name) return '<span class="table-flag">🏳️</span>';
+      const key = String(fixText(name)).trim().toLowerCase();
+      let code = "";
+      for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+        if (k.toLowerCase() === key) { code = v; break; }
+      }
+      if (!code) {
+        for (const [k, v] of Object.entries(COUNTRY_CODES)) {
+          if (key.includes(k.toLowerCase()) || k.toLowerCase().includes(key)) { code = v; break; }
+        }
+      }
+      if (code) {
+        return `<span class="table-flag"><img src="https://flagcdn.com/32x24/${code}.png" alt="${name}" onerror="this.outerHTML='🏳️'"></span>`;
+      }
+      return '<span class="table-flag">🏳️</span>';
+    }
+
+    function setApiStatus(type, text) {
+      const el = document.getElementById("apiStatus");
+      el.className = `api-pill ${type || ""}`.trim();
+      el.querySelector("span:last-child").textContent = text;
+    }
+
+    function groupBy(rows, key) {
+      return rows.reduce((acc, row) => {
+        const k = row[key] || "-";
+        (acc[k] || (acc[k] = [])).push(row);
+        return acc;
+      }, {});
+    }
+
+    function teamName(row) {
+      return fixText(row.team || row.name || row.team_name || row.country || "Selección");
+    }
+
+    function num(row, ...keys) {
+      for (const k of keys) {
+        if (row[k] !== undefined && row[k] !== null && row[k] !== "") {
+          return Number(row[k]) || 0;
+        }
+      }
+      return 0;
+    }
+
+    function sortRows(rows) {
+      return rows.sort((a, b) =>
+        num(b, "points") - num(a, "points") ||
+        num(b, "goal_difference", "gd") - num(a, "goal_difference", "gd") ||
+        num(b, "goals_for", "gf") - num(a, "goals_for", "gf")
+      );
+    }
+
+    function renderClassification() {
+      const groupsEl = document.getElementById("groups");
+      const query = state.search.toLowerCase().trim();
+
+      let filtered = [...state.classification];
+      if (query) {
+        filtered = filtered.filter(row => {
+          const name = teamName(row).toLowerCase();
+          const grp = String(row.group || "").toLowerCase();
+          return name.includes(query) || grp.includes(query) || query.includes(grp);
+        });
+      }
+
+      if (!filtered.length) {
+        groupsEl.innerHTML = `<div class="empty">No hay filas de clasificación que coincidan con la búsqueda.</div>`;
+        return;
+      }
+
+      const grouped = groupBy(filtered, "group");
+      groupsEl.innerHTML = Object.keys(grouped).sort().map(group => {
         const list = sortRows(grouped[group]);
-        return `<article class="group-card"><div class="group-title"><span>Grupo ${group}</span><span>${list.length} equipos</span></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Equipo</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>${list.map((r,i)=>`<tr><td class="pos">${i+1}</td><td class="team">${teamName(r)}</td><td><strong>${num(r,"points")}</strong></td><td>${num(r,"played","played_games")}</td><td>${num(r,"wins","won")}</td><td>${num(r,"draws","draw")}</td><td>${num(r,"losses","lost")}</td><td>${num(r,"goals_for","gf")}</td><td>${num(r,"goals_against","ga")}</td><td>${num(r,"goal_difference","gd")}</td></tr>`).join("")}</tbody></table></div></article>`;
+        return `
+          <article class="group-card">
+            <div class="group-title">
+              <span>Grupo ${group}</span>
+              <span>${list.length} equipos</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Equipo</th>
+                    <th>PTS</th>
+                    <th>PJ</th>
+                    <th>G</th>
+                    <th>E</th>
+                    <th>P</th>
+                    <th>GF</th>
+                    <th>GC</th>
+                    <th>DG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.map((r, i) => {
+                    const name = teamName(r);
+                    return `
+                      <tr>
+                        <td class="pos">${i + 1}</td>
+                        <td class="team">${teamFlagBadge(name)} <span>${name}</span></td>
+                        <td><strong>${num(r, "points")}</strong></td>
+                        <td>${num(r, "played", "played_games")}</td>
+                        <td>${num(r, "wins", "won")}</td>
+                        <td>${num(r, "draws", "draw")}</td>
+                        <td>${num(r, "losses", "lost")}</td>
+                        <td>${num(r, "goals_for", "gf")}</td>
+                        <td>${num(r, "goals_against", "ga")}</td>
+                        <td>${num(r, "goal_difference", "gd")}</td>
+                      </tr>`;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </article>`;
       }).join("");
     }
-    async function load(){groupsEl.innerHTML='<div class="loading">Cargando clasificación desde Render...</div>';try{const rows=await apiGet('/api/clasificacion');render(Array.isArray(rows)?rows:[])}catch(e){groupsEl.innerHTML='<div class="error">No se pudo cargar /api/clasificacion. Revisa Render o CORS.</div>'}}
-    document.querySelector('#reloadBtn').addEventListener('click',load);load();
+
+    async function loadData() {
+      const groupsEl = document.getElementById("groups");
+      groupsEl.innerHTML = `<div class="loading">Cargando clasificación de grupos desde Render...</div>`;
+      setApiStatus("", "Conectando API");
+      try {
+        const [health, rows] = await Promise.all([
+          fetch(`${API_BASE}/health`).then(r => r.json()).catch(() => ({ status: "unknown" })),
+          fetch(`${API_BASE}/api/clasificacion`).then(r => r.json())
+        ]);
+        
+        state.classification = Array.isArray(rows) ? rows : [];
+        
+        // Auto-sincronizar si los datos devueltos están totalmente vacíos
+        if (state.classification.length === 0) {
+          groupsEl.innerHTML = `<div class="loading">Iniciando sincronización de datos con Render...</div>`;
+          await fetch(`${API_BASE}/api/sync`, { method: "POST" });
+          const retryRows = await fetch(`${API_BASE}/api/clasificacion`).then(r => r.json());
+          state.classification = Array.isArray(retryRows) ? retryRows : [];
+        }
+
+        setApiStatus("ok", `Backend operativo · ${state.classification.length} filas`);
+        renderClassification();
+      } catch (error) {
+        console.error(error);
+        setApiStatus("error", "Error API Render");
+        groupsEl.innerHTML = `<div class="error-box">No se pudo cargar los datos desde Render. Esperando a que el backend se active...</div>`;
+      }
+    }
+
+    // Heurísticas Locales de la clasificación para el Chatbot
+    function getGroupLeader(groupLetter) {
+      const char = groupLetter.toUpperCase();
+      const inGroup = state.classification.filter(r => String(r.group || "").toUpperCase() === char);
+      if (!inGroup.length) return null;
+      const sorted = sortRows(inGroup);
+      return sorted[0];
+    }
+
+    function getTeamRow(queryName) {
+      const q = queryName.toLowerCase();
+      return state.classification.find(r => teamName(r).toLowerCase().includes(q));
+    }
+
+    function localAnswer(question) {
+      const q = question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      
+      // Líderes
+      const groupMatch = q.match(/lidera\s+el\s+grupo\s+([a-h])/i) || q.match(/grupo\s+([a-h])/i);
+      if (groupMatch && (q.includes("lider") || q.includes("quien") || q.includes("va primero"))) {
+        const letter = groupMatch[1].toUpperCase();
+        const leader = getGroupLeader(letter);
+        if (leader) {
+          return `El líder actual del **Grupo ${letter}** es **${flag(teamName(leader))} ${teamName(leader)}** con **${num(leader, "points")} puntos** en ${num(leader, "played")} partidos jugados.`;
+        }
+      }
+
+      // Equipos en general
+      if (q.includes("españa") || q.includes("espana")) {
+        const r = getTeamRow("Spain");
+        if (r) {
+          return `**${flag("Spain")} España** está en el **Grupo ${r.group}**. Lleva **${num(r, "points")} puntos** (PJ: ${num(r, "played")}, G: ${num(r, "wins")}, E: ${num(r, "draws")}, P: ${num(r, "losses")}).`;
+        }
+      }
+      if (q.includes("mexico") || q.includes("mexico")) {
+        const r = getTeamRow("Mexico");
+        if (r) {
+          return `**${flag("Mexico")} México** está en el **Grupo ${r.group}**. Tiene **${num(r, "points")} puntos** (PJ: ${num(r, "played")}, G: ${num(r, "wins")}, E: ${num(r, "draws")}, P: ${num(r, "losses")}).`;
+        }
+      }
+      if (q.includes("argentina")) {
+        const r = getTeamRow("Argentina");
+        if (r) {
+          return `**${flag("Argentina")} Argentina** está en el **Grupo ${r.group}**. Tiene **${num(r, "points")} puntos** (PJ: ${num(r, "played")}, G: ${num(r, "wins")}, E: ${num(r, "draws")}, P: ${num(r, "losses")}).`;
+        }
+      }
+
+      // Mostrar todos los equipos cargados
+      if (q.includes("equipos") || q.includes("paises") || q.includes("selecciones")) {
+        const names = [...new Set(state.classification.map(r => teamName(r)))].sort();
+        if (names.length) {
+          return `Equipos cargados en la clasificación del Mundial (${names.length}):<br>${names.map(n => `• ${flag(n)} ${n}`).join(", ")}`;
+        }
+      }
+
+      return null;
+    }
+
+    async function answerQuestion(question) {
+      // 1. Intentar responder localmente con los datos de clasificación en memoria
+      const local = localAnswer(question);
+      if (local) return local;
+
+      // 2. Enviar al backend QA de Render
+      try {
+        const res = await fetch(`${API_BASE}/api/qa`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
+        if (res.ok) {
+          const response = await res.json();
+          const ans = response.answer || response.response || response.message;
+          if (ans && !ans.toLowerCase().includes("no tengo datos")) {
+            return fixText(ans);
+          }
+        }
+      } catch (err) {
+        console.warn("Error enviando al backend QA, usando respuesta general", err);
+      }
+
+      return `Te puedo ayudar a conocer la clasificación del Mundial, quién va primero en cada grupo o los puntos de cualquier selección. Prueba preguntando: **"¿Quién lidera el grupo A?"** o **"¿Cómo va el grupo de España?"**.`;
+    }
+
+    function appendMessage(role, html) {
+      const chat = document.getElementById("chatWindow");
+      const item = document.createElement("div");
+      item.className = `msg ${role}`;
+      item.innerHTML = html;
+      chat.appendChild(item);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Form submit y botones rápidos del chatbot
+    document.getElementById("chatForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      
+      appendMessage("user", text);
+      input.value = "";
+
+      appendMessage("bot", '<div class="loading" style="padding:0">Pensando...</div>');
+      const answer = await answerQuestion(text);
+      const elements = document.getElementById("chatWindow").querySelectorAll(".msg.bot");
+      const last = elements[elements.length - 1];
+      if (last && last.textContent === "Pensando...") {
+        last.innerHTML = answer;
+      } else {
+        appendMessage("bot", answer);
+      }
+    });
+
+    document.querySelectorAll(".quick-row button").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const q = btn.getAttribute("data-q");
+        appendMessage("user", q);
+        appendMessage("bot", '<div class="loading" style="padding:0">Pensando...</div>');
+        const answer = await answerQuestion(q);
+        const elements = document.getElementById("chatWindow").querySelectorAll(".msg.bot");
+        const last = elements[elements.length - 1];
+        if (last && last.textContent === "Pensando...") {
+          last.innerHTML = answer;
+        } else {
+          appendMessage("bot", answer);
+        }
+      });
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    document.getElementById("searchInput").addEventListener("input", event => {
+      state.search = event.target.value;
+      renderClassification();
+    });
+
+    // Carga inicial
+    loadData();
   </script>
 </body>
 </html>
