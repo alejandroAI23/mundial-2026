@@ -22,23 +22,32 @@ MOTM_CSV = DATA_DIR / "partidos_motm.csv"
 DISCIPLINA_CSV = DATA_DIR / "disciplina.csv"
 MATCHES_CSV = DATA_DIR / "sofascore_matches.csv"
 BASE_URL = "https://www.sofascore.com/api/v1"
+
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 Chrome/124 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36",
     "Accept": "application/json,text/plain,*/*",
     "Referer": "https://www.sofascore.com/",
     "Origin": "https://www.sofascore.com",
 }
 
-JUGADORES_HEADER = ["partido_id","match_id","fecha","jugador_id","jugador","pais","rival","posicion","titular","minutos","goles","asistencias","disparos","tiros_puerta","pases_clave","regates_exitosos","faltas_cometidas","faltas_recibidas","fueras_juego","rating","fecha_nacimiento","fuente","actualizado_en","es_ejemplo"]
-PORTEROS_HEADER = ["partido_id","match_id","fecha","portero_id","portero","pais","rival","titular","minutos","saves","saves_area","goles_encajados","porterias_cero","penaltis_parados","rating","fuente","actualizado_en","es_ejemplo"]
-MOTM_HEADER = ["partido_id","match_id","fecha","local","visitante","jugador_id","jugador","pais","rating","criterio","fuente","actualizado_en","es_ejemplo"]
-DISCIPLINA_HEADER = ["partido_id","match_id","fecha","jugador_id","jugador","pais","rival","amarillas","segundas_amarillas","rojas","faltas_cometidas","faltas_recibidas","fuente","actualizado_en","es_ejemplo"]
+JUGADORES_HEADER = ["partido_id", "match_id", "fecha", "jugador_id", "jugador", "pais", "rival", "posicion", "titular", "minutos", "goles", "asistencias", "disparos", "tiros_puerta", "pases_clave", "regates_exitosos", "faltas_cometidas", "faltas_recibidas", "fueras_juego", "rating", "fecha_nacimiento", "fuente", "actualizado_en", "es_ejemplo"]
+PORTEROS_HEADER = ["partido_id", "match_id", "fecha", "portero_id", "portero", "pais", "rival", "titular", "minutos", "saves", "saves_area", "goles_encajados", "porterias_cero", "penaltis_parados", "rating", "fuente", "actualizado_en", "es_ejemplo"]
+MOTM_HEADER = ["partido_id", "match_id", "fecha", "local", "visitante", "jugador_id", "jugador", "pais", "rating", "criterio", "fuente", "actualizado_en", "es_ejemplo"]
+DISCIPLINA_HEADER = ["partido_id", "match_id", "fecha", "jugador_id", "jugador", "pais", "rival", "amarillas", "segundas_amarillas", "rojas", "faltas_cometidas", "faltas_recibidas", "fuente", "actualizado_en", "es_ejemplo"]
+
+
+class SofaScoreBlocked(RuntimeError):
+    pass
 
 
 def setup_logging() -> None:
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     log_file = LOG_DIR / f"scraper_{datetime.now().strftime('%Y%m%d')}.log"
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", handlers=[logging.FileHandler(log_file, encoding="utf-8"), logging.StreamHandler(sys.stdout)])
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[logging.FileHandler(log_file, encoding="utf-8"), logging.StreamHandler(sys.stdout)],
+    )
 
 
 def now_iso() -> str:
@@ -70,10 +79,15 @@ def get_json(path: str, retries: int = 3) -> dict[str, Any]:
         try:
             time.sleep(random.uniform(1.0, 3.0))
             response = requests.get(url, headers=HEADERS, timeout=25)
+            body = response.text[:180]
+            if response.status_code == 403 and "challenge" in body.lower():
+                raise SofaScoreBlocked(f"SofaScore bloquea la llamada con 403 challenge en {path}")
             if response.status_code in {403, 429, 500, 502, 503, 504}:
-                raise RuntimeError(f"HTTP {response.status_code}: {response.text[:120]}")
+                raise RuntimeError(f"HTTP {response.status_code}: {body}")
             response.raise_for_status()
             return response.json()
+        except SofaScoreBlocked:
+            raise
         except Exception as exc:
             last_exc = exc
             logging.warning("Intento %s/%s fallido para %s: %s", attempt, retries, path, exc)
@@ -124,7 +138,8 @@ def extract_event_info(match_id: int, fallback: dict[str, Any] | None = None) ->
     fallback = fallback or {}
     try:
         event = get_json(f"/event/{match_id}").get("event") or {}
-    except Exception:
+    except SofaScoreBlocked:
+        logging.warning("No se pudo leer /event/%s por challenge. Uso datos manuales del CSV.", match_id)
         event = {}
     home = event.get("homeTeam") or {}
     away = event.get("awayTeam") or {}
@@ -176,18 +191,27 @@ def extract_discipline_rows(match_id: int, meta: dict[str, Any], player_rows: li
 
 def extract_motm_row(match_id: int, meta: dict[str, Any], player_rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     rated = [row for row in player_rows if safe_float(row.get("rating")) > 0]
-    if not rated: return None
+    if not rated:
+        return None
     top = sorted(rated, key=lambda row: safe_float(row.get("rating")), reverse=True)[0]
     return {"partido_id": meta["partido_id"], "match_id": str(match_id), "fecha": meta["fecha"], "local": meta.get("local", ""), "visitante": meta.get("visitante", ""), "jugador_id": top.get("jugador_id", ""), "jugador": top.get("jugador", ""), "pais": top.get("pais", ""), "rating": top.get("rating", ""), "criterio": "rating_mas_alto_sofascore", "fuente": "sofascore", "actualizado_en": now_iso(), "es_ejemplo": "false"}
 
 
-def scrape_match(match_id: int, fallback: dict[str, Any] | None = None) -> None:
+def scrape_match(match_id: int, fallback: dict[str, Any] | None = None) -> bool:
     logging.info("Procesando match_id=%s", match_id)
-    meta = extract_event_info(match_id, fallback)
-    player_rows, goalkeeper_rows = extract_lineup_rows(match_id, meta)
-    discipline_rows = extract_discipline_rows(match_id, meta, player_rows)
-    motm_row = extract_motm_row(match_id, meta, player_rows)
-    logging.info("Añadidos: jugadores=%s porteros=%s disciplina=%s motm=%s", append_dedup(JUGADORES_CSV, JUGADORES_HEADER, player_rows, ["match_id", "jugador_id"]), append_dedup(PORTEROS_CSV, PORTEROS_HEADER, goalkeeper_rows, ["match_id", "portero_id"]), append_dedup(DISCIPLINA_CSV, DISCIPLINA_HEADER, discipline_rows, ["match_id", "jugador_id"]), append_dedup(MOTM_CSV, MOTM_HEADER, [motm_row] if motm_row else [], ["match_id"]))
+    try:
+        meta = extract_event_info(match_id, fallback)
+        player_rows, goalkeeper_rows = extract_lineup_rows(match_id, meta)
+        discipline_rows = extract_discipline_rows(match_id, meta, player_rows)
+        motm_row = extract_motm_row(match_id, meta, player_rows)
+        logging.info("Añadidos: jugadores=%s porteros=%s disciplina=%s motm=%s", append_dedup(JUGADORES_CSV, JUGADORES_HEADER, player_rows, ["match_id", "jugador_id"]), append_dedup(PORTEROS_CSV, PORTEROS_HEADER, goalkeeper_rows, ["match_id", "portero_id"]), append_dedup(DISCIPLINA_CSV, DISCIPLINA_HEADER, discipline_rows, ["match_id", "jugador_id"]), append_dedup(MOTM_CSV, MOTM_HEADER, [motm_row] if motm_row else [], ["match_id"]))
+        return True
+    except SofaScoreBlocked as exc:
+        logging.error("BLOQUEADO match_id=%s: %s. Rellena los CSV manualmente o prueba desde local.", match_id, exc)
+        return False
+    except Exception as exc:
+        logging.exception("ERROR match_id=%s: %s", match_id, exc)
+        return False
 
 
 def all_played_matches() -> list[dict[str, Any]]:
@@ -205,10 +229,19 @@ def main() -> None:
     for path, header in [(JUGADORES_CSV, JUGADORES_HEADER), (PORTEROS_CSV, PORTEROS_HEADER), (MOTM_CSV, MOTM_HEADER), (DISCIPLINA_CSV, DISCIPLINA_HEADER)]:
         ensure_csv(path, header)
     if args.match_id:
-        scrape_match(args.match_id)
-    else:
-        for row in all_played_matches():
-            scrape_match(int(row["match_id"]), row)
+        ok = scrape_match(args.match_id)
+        logging.info("Resumen scraper: ok=%s fallidos=%s", 1 if ok else 0, 0 if ok else 1)
+        return
+    rows = all_played_matches()
+    ok_count = 0
+    fail_count = 0
+    for row in rows:
+        if scrape_match(int(row["match_id"]), row):
+            ok_count += 1
+        else:
+            fail_count += 1
+    logging.info("Resumen scraper: partidos=%s ok=%s fallidos=%s", len(rows), ok_count, fail_count)
+    logging.info("El workflow termina en verde aunque SofaScore bloquee. Si fallidos > 0, usa carga manual en CSV.")
 
 
 if __name__ == "__main__":
