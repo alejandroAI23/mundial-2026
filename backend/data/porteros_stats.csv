@@ -1,1 +1,3 @@
-partido_id,match_id,fecha,nombre,pais,rival,titular,minutos,paradas,goles_encajados,porterias_cero,penaltis_parados,rating,fuente,actualizado_en,es_ejemplo
+partido_id,match_id,fecha,portero_id,portero,pais,rival,titular,minutos,saves,saves_area,goles_encajados,porterias_cero,penaltis_parados,rating,fuente,actualizado_en,es_ejemplo
+EXAMPLE-001,100000001,2026-06-11,910001,Portero Demo,Mexico,Sudafrica,true,90,4,2,0,1,0,7.8,manual,2026-06-11T23:00:00Z,true
+EXAMPLE-002,100000002,2026-06-12,910002,Guardameta Demo,Espana,Cabo Verde,true,90,2,1,1,0,1,7.2,manual,2026-06-12T23:00:00Z,true
