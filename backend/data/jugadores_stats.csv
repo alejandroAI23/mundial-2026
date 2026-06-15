@@ -1,1 +1,1 @@
-partido_id,match_id,fecha,jugador_id,jugador,pais,rival,posicion,titular,minutos,goles,asistencias,rating,fecha_nacimiento,fuente,actualizado_en,es_ejemplo
+partido_id,match_id,fecha,jugador_id,jugador,pais,rival,posicion,titular,minutos,goles,asistencias,disparos,tiros_puerta,pases_clave,regates_exitosos,faltas_cometidas,faltas_recibidas,fueras_juego,rating,fecha_nacimiento,fuente,actualizado_en,es_ejemplo
