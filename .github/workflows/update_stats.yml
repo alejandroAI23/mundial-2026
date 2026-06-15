@@ -10,14 +10,114 @@ jobs:
   update-stats:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install requests pandas
-      - run: python backend/scripts/scrape_sofascore.py --all-played
-      - run: |
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run SofaScore scraper
+        id: scraper
+        continue-on-error: true
+        run: python backend/scripts/scrape_sofascore.py --all-played
+
+      - name: Build visible stats summary
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import csv
+          import os
+
+          root = Path.cwd()
+          data_dir = root / "backend" / "data"
+          logs_dir = root / "backend" / "logs"
+          summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
+
+          csv_files = [
+              "jugadores_stats.csv",
+              "porteros_stats.csv",
+              "partidos_motm.csv",
+              "disciplina.csv",
+              "sofascore_matches.csv",
+          ]
+
+          lines = []
+          lines.append("# Resumen actualización estadísticas Mundial 2026")
+          lines.append("")
+          lines.append("## Estado de los CSV")
+          lines.append("")
+          lines.append("| Archivo | Filas totales | Filas reales | Filas ejemplo |")
+          lines.append("|---|---:|---:|---:|")
+
+          for name in csv_files:
+              path = data_dir / name
+              if not path.exists():
+                  lines.append(f"| `{name}` | 0 | 0 | 0 |")
+                  continue
+              with path.open("r", encoding="utf-8", newline="") as fh:
+                  rows = list(csv.DictReader(fh))
+              total = len(rows)
+              examples = sum(1 for row in rows if str(row.get("es_ejemplo", "")).lower() == "true")
+              real = total - examples
+              lines.append(f"| `{name}` | {total} | {real} | {examples} |")
+
+          logs = sorted(logs_dir.glob("scraper_*.log"))
+          lines.append("")
+          lines.append("## Diagnóstico del scraper")
+          lines.append("")
+
+          if not logs:
+              lines.append("No se ha generado log del scraper.")
+          else:
+              latest = logs[-1]
+              text = latest.read_text(encoding="utf-8", errors="replace")
+              lower = text.lower()
+              if "challenge" in lower or "bloqueado" in lower or "403" in lower:
+                  lines.append("Resultado: SofaScore probablemente ha bloqueado la descarga automática con `403 challenge`.")
+              elif "añadidos" in lower or "anadidos" in lower:
+                  lines.append("Resultado: el scraper ha procesado partidos. Revisa si hay filas reales nuevas en los CSV.")
+              else:
+                  lines.append("Resultado: no se detectan errores claros ni filas añadidas en el log.")
+
+              lines.append("")
+              lines.append(f"Log revisado: `{latest.relative_to(root)}`")
+              lines.append("")
+              lines.append("### Últimas líneas del log")
+              lines.append("")
+              lines.append("```text")
+              tail = text.splitlines()[-80:]
+              lines.extend(tail if tail else ["Log vacío"])
+              lines.append("```")
+
+          summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print("\n".join(lines))
+          PY
+
+      - name: Upload scraper report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stats-scraper-report
+          path: |
+            backend/data/*.csv
+            backend/logs/*.log
+          if-no-files-found: ignore
+
+      - name: Commit updated CSVs and logs
+        if: always()
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add backend/data/*.csv backend/logs/*.log
-          if git diff --cached --quiet; then echo "No changes"; else git commit -m "Actualiza estadísticas de jugadores" && git push; fi
+          if git diff --cached --quiet; then
+            echo "No CSV or log changes to commit"
+          else
+            git commit -m "Actualiza estadísticas de jugadores"
+            git push
+          fi
