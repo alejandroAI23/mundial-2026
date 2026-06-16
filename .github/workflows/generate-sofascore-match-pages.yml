@@ -1,0 +1,49 @@
+name: Generate SofaScore Match Pages
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'backend/data/sofascore_matches.csv'
+      - 'backend/scripts/generate_sofascore_match_pages.py'
+
+permissions:
+  contents: write
+
+jobs:
+  generate-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Generate match pages
+        run: |
+          python backend/scripts/generate_sofascore_match_pages.py
+
+      - name: Build summary
+        run: |
+          echo "## Páginas SofaScore generadas" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Directorio: \`tools/sofascore-partidos/\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Archivos" >> $GITHUB_STEP_SUMMARY
+          find tools/sofascore-partidos -maxdepth 1 -name '*.html' | sort | sed 's#^#- #' >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tools/sofascore-partidos/*.html
+          if git diff --cached --quiet; then
+            echo "No generated pages changed"
+          else
+            git commit -m "Genera páginas SofaScore por partido"
+            git push
+          fi
