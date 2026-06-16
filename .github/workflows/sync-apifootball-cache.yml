@@ -1,4 +1,4 @@
-name: Sync API Football Cache
+name: Sync Free Basic Football Data
 
 on:
   workflow_dispatch:
@@ -19,5 +19,20 @@ jobs:
           fi
 
           echo "Calling backend sync endpoint..."
-          curl --fail --silent --show-error --request POST "$SYNC_BASE_URL/api/sync"
-          echo "Backend cache sync completed"
+          response=$(curl --fail --silent --show-error --request POST "$SYNC_BASE_URL/api/sync")
+          echo "$response"
+          echo "Backend basic cache sync completed"
+
+          {
+            echo "# Sync Free Basic Football Data"
+            echo ""
+            echo "Endpoint called: \`$SYNC_BASE_URL/api/sync\`"
+            echo ""
+            echo "## Response"
+            echo ""
+            echo '```json'
+            echo "$response"
+            echo '```'
+            echo ""
+            echo "Este workflow sincroniza datos basicos gratuitos: partidos, resultados, clasificacion, goleadores basicos y equipos. Las metricas avanzadas se cargan con el workflow \`Add manual advanced stats\`."
+          } >> "$GITHUB_STEP_SUMMARY"
