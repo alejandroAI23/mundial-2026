@@ -3,171 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conversor SofaScore a CSV</title>
+  <title>Conversor SofaScore partido completo</title>
   <style>
-    :root { --bg:#071f2a; --card:#ffffff; --text:#111827; --muted:#64748b; --line:#dbe3ec; --blue:#0f5fd7; --green:#00a870; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter,system-ui,Segoe UI,sans-serif; background:linear-gradient(135deg,#082f49,#064e3b); color:var(--text); }
-    .page { width:min(1200px,calc(100% - 28px)); margin:0 auto; padding:28px 0 48px; }
-    .hero { color:white; margin-bottom:22px; }
-    h1 { margin:0 0 8px; font-size:clamp(2rem,5vw,4rem); line-height:.95; letter-spacing:-.05em; }
-    p { line-height:1.55; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
-    .card { background:rgba(255,255,255,.95); border:1px solid rgba(255,255,255,.35); border-radius:22px; padding:20px; box-shadow:0 24px 70px rgba(0,0,0,.2); }
-    .full { grid-column:1 / -1; }
-    label { display:block; font-weight:900; margin:12px 0 6px; }
-    input, textarea, select { width:100%; border:1px solid var(--line); border-radius:14px; padding:12px 13px; font:inherit; background:white; }
-    textarea { min-height:180px; resize:vertical; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.9rem; }
-    .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-    button { border:0; border-radius:999px; padding:12px 18px; font-weight:900; cursor:pointer; color:white; background:linear-gradient(135deg,var(--blue),var(--green)); margin:12px 8px 0 0; }
-    .btn-secondary { background:#eef4fb; color:#0f2850; border:1px solid var(--line); }
-    .hint { color:var(--muted); font-size:.92rem; }
-    .status { margin-top:12px; font-weight:800; }
-    pre { white-space:pre-wrap; overflow:auto; background:#08111f; color:#d8f3dc; padding:14px; border-radius:14px; min-height:120px; }
-    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:.9rem; }
-    th,td { border-bottom:1px solid var(--line); text-align:left; padding:8px; }
-    th { color:#0f2850; }
-    @media (max-width:850px) { .grid { grid-template-columns:1fr; } .meta { grid-template-columns:1fr; } }
+    :root{--bg:#071f2a;--card:#fff;--text:#111827;--muted:#64748b;--line:#dbe3ec;--blue:#0f5fd7;--green:#00a870;--orange:#f97316;--red:#dc2626}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,sans-serif;background:linear-gradient(135deg,#082f49,#064e3b);color:var(--text)}
+    .page{width:min(1500px,calc(100% - 28px));margin:0 auto;padding:28px 0 54px}.hero{color:#fff;margin-bottom:22px}.hero h1{margin:0 0 10px;font-size:clamp(2rem,5vw,4.5rem);line-height:.92;letter-spacing:-.06em}.hero p{max-width:980px;line-height:1.55;color:rgba(255,255,255,.86)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.card{background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.35);border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.2)}.full{grid-column:1/-1}.card h2{margin:0 0 10px;font-size:1.25rem}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.paste-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.paste-box h3{margin:0 0 6px;font-size:1rem}.paste-box small{color:var(--muted);display:block;margin-bottom:6px}
+    label{display:block;font-weight:900;margin:10px 0 6px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 13px;font:inherit;background:#fff}textarea{min-height:120px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.84rem}.big textarea{min-height:170px}.hint{color:var(--muted);font-size:.92rem;line-height:1.45}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:999px;padding:12px 18px;font-weight:900;cursor:pointer;color:white;background:linear-gradient(135deg,var(--blue),var(--green))}.btn-secondary{background:#eef4fb;color:#0f2850;border:1px solid var(--line)}.btn-red{background:linear-gradient(135deg,var(--red),var(--orange))}.status{margin-top:12px;font-weight:900;color:#064e3b}
+    pre{white-space:pre;overflow:auto;background:#08111f;color:#d8f3dc;padding:14px;border-radius:14px;min-height:120px;font-size:.85rem}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.86rem}th,td{border-bottom:1px solid var(--line);text-align:left;padding:8px;vertical-align:top}th{color:#0f2850;background:#f4f7fb;position:sticky;top:0}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;background:#e8f3ff;color:#064fb4;font-weight:900;font-size:.78rem}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:12px;margin-top:10px}.ok{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px;margin-top:10px}
+    @media(max-width:950px){.grid,.paste-grid{grid-template-columns:1fr}.meta{grid-template-columns:1fr}.page{width:min(100% - 18px,1500px)}textarea{min-height:150px}}
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <h1>Conversor SofaScore → CSV</h1>
-      <p>Copia la tabla visible de <strong>Estadísticas del jugador</strong>, pégala aquí y genera líneas para tus CSVs sin buscar dato por dato.</p>
-    </section>
+<main class="page">
+  <section class="hero">
+    <h1>Conversor SofaScore → CSV por partido completo</h1>
+    <p>Pega las tablas visibles de SofaScore por pestaña: <strong>General, Atacante, Defensa, Pases, Duelos y Portería</strong>. La herramienta fusiona jugadores por nombre y genera líneas para tus CSVs y JSON para el workflow manual.</p>
+  </section>
 
-    <section class="grid">
-      <div class="card full">
-        <h2>1. Datos del partido</h2>
-        <div class="meta">
-          <div><label>partido_id</label><input id="partidoId" placeholder="SWE-TUN-2026" /></div>
-          <div><label>match_id</label><input id="matchId" placeholder="15186951" /></div>
-          <div><label>fecha</label><input id="fecha" placeholder="2026-06-15" /></div>
-          <div><label>local</label><input id="local" placeholder="Sweden" /></div>
-          <div><label>visitante</label><input id="visitante" placeholder="Tunisia" /></div>
-          <div><label>equipo de estas filas</label><input id="pais" placeholder="Sweden" /></div>
-        </div>
-        <p class="hint">Consejo: crea una conversión por selección. Primero filas de Sweden y después filas de Tunisia.</p>
+  <section class="grid">
+    <div class="card full">
+      <h2>1. Datos del partido</h2>
+      <div class="meta">
+        <div><label>partido_id</label><input id="partidoId" placeholder="SWE-TUN-2026"></div>
+        <div><label>match_id</label><input id="matchId" placeholder="15186951"></div>
+        <div><label>fecha</label><input id="fecha" placeholder="2026-06-15"></div>
+        <div><label>actualizado_en</label><input id="updatedAt" placeholder="auto"></div>
+        <div><label>local</label><input id="local" placeholder="Sweden"></div>
+        <div><label>visitante</label><input id="visitante" placeholder="Tunisia"></div>
+        <div><label>equipo por defecto si no detecta bandera</label><select id="defaultTeam"><option value="local">Local</option><option value="visitante">Visitante</option></select></div>
+        <div><label>posición por defecto</label><input id="posDefault" placeholder="M"></div>
       </div>
+      <div class="warn"><strong>Forma rápida:</strong> copia una tabla de SofaScore, pégala en su caja y repite con las pestañas. Si el copiado no trae banderas, usa el selector “equipo por defecto” y convierte una selección cada vez.</div>
+    </div>
 
-      <div class="card">
-        <h2>2. Pega aquí la tabla copiada</h2>
-        <p class="hint">En SofaScore: pestaña <strong>Alineaciones → Estadísticas del jugador</strong>. Selecciona las filas visibles, Ctrl+C y pega aquí.</p>
-        <textarea id="raw" placeholder="Pega aquí filas copiadas desde SofaScore. Mejor si vienen separadas por tabulaciones."></textarea>
-        <button onclick="convertir()">Convertir a CSV</button>
-        <button class="btn-secondary" onclick="cargarEjemplo()">Cargar ejemplo</button>
-        <div id="status" class="status"></div>
+    <div class="card full big">
+      <h2>2. Pega las tablas de SofaScore</h2>
+      <p class="hint">No pasa nada si una caja queda vacía. Cuantas más pestañas pegues, más completo será el CSV. Pega filas completas, no capturas.</p>
+      <div class="paste-grid">
+        <div class="paste-box"><h3>General</h3><small>Goles, asistencias, minutos, rating si aparece.</small><textarea id="rawGeneral" placeholder="Pega aquí la tabla General"></textarea></div>
+        <div class="paste-box"><h3>Atacante</h3><small>Tiros, xG, tiros fuera/bloqueados, regates.</small><textarea id="rawAtacante" placeholder="Pega aquí la tabla Atacante"></textarea></div>
+        <div class="paste-box"><h3>Defensa</h3><small>Acciones defensivas, despejes, intercepciones, entradas.</small><textarea id="rawDefensa" placeholder="Pega aquí la tabla Defensa"></textarea></div>
+        <div class="paste-box"><h3>Pases</h3><small>Toques, pases precisos, pases clave, centros y pases largos.</small><textarea id="rawPases" placeholder="Pega aquí la tabla Pases"></textarea></div>
+        <div class="paste-box"><h3>Duelos</h3><small>Faltas, recibió falta, fueras de juego, posición, valoración.</small><textarea id="rawDuelos" placeholder="Pega aquí la tabla Duelos"></textarea></div>
+        <div class="paste-box"><h3>Portería</h3><small>Paradas, goles evitados, puños, salidas por alto, valoración.</small><textarea id="rawPorteria" placeholder="Pega aquí la tabla Portería"></textarea></div>
       </div>
+      <div class="actions">
+        <button onclick="convertirTodo()">Convertir todo</button>
+        <button class="btn-secondary" onclick="cargarEjemplo()">Cargar ejemplo Suecia - Túnez</button>
+        <button class="btn-red" onclick="limpiarTodo()">Limpiar</button>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
 
-      <div class="card">
-        <h2>Vista previa detectada</h2>
-        <div id="preview" class="hint">Todavía no hay datos convertidos.</div>
-      </div>
+    <div class="card full">
+      <h2>3. Vista previa fusionada</h2>
+      <div id="preview" class="hint">Todavía no hay datos convertidos.</div>
+    </div>
 
-      <div class="card full">
-        <h2>jugadores_stats.csv</h2>
-        <button onclick="copyText('jugadoresOut')">Copiar jugadores</button>
-        <pre id="jugadoresOut"></pre>
-      </div>
-
-      <div class="card full">
-        <h2>disciplina.csv</h2>
-        <button onclick="copyText('disciplinaOut')">Copiar disciplina</button>
-        <pre id="disciplinaOut"></pre>
-      </div>
-
-      <div class="card full">
-        <h2>partidos_motm.csv</h2>
-        <button onclick="copyText('motmOut')">Copiar MOTM</button>
-        <pre id="motmOut"></pre>
-      </div>
-    </section>
-  </main>
+    <div class="card full"><h2>jugadores_stats.csv</h2><button onclick="copyText('jugadoresOut')">Copiar jugadores</button><pre id="jugadoresOut"></pre></div>
+    <div class="card full"><h2>disciplina.csv</h2><button onclick="copyText('disciplinaOut')">Copiar disciplina</button><pre id="disciplinaOut"></pre></div>
+    <div class="card full"><h2>porteros_stats.csv</h2><button onclick="copyText('porterosOut')">Copiar porteros</button><pre id="porterosOut"></pre></div>
+    <div class="card full"><h2>partidos_motm.csv</h2><button onclick="copyText('motmOut')">Copiar MOTM</button><pre id="motmOut"></pre></div>
+    <div class="card full"><h2>stats_json para workflow “Add manual advanced stats”</h2><p class="hint">Copia una línea JSON y úsala en el campo <strong>stats_json</strong> del workflow si prefieres cargar jugador a jugador.</p><button onclick="copyText('jsonOut')">Copiar JSONL</button><pre id="jsonOut"></pre></div>
+  </section>
+</main>
 
 <script>
-const JUGADORES_HEADER = "partido_id,match_id,fecha,jugador_id,jugador,pais,rival,posicion,titular,minutos,goles,asistencias,disparos,tiros_puerta,pases_clave,regates_exitosos,faltas_cometidas,faltas_recibidas,fueras_juego,rating,fecha_nacimiento,fuente,actualizado_en,es_ejemplo";
-const DISCIPLINA_HEADER = "partido_id,match_id,fecha,jugador_id,jugador,pais,rival,amarillas,segundas_amarillas,rojas,faltas_cometidas,faltas_recibidas,fuente,actualizado_en,es_ejemplo";
-const MOTM_HEADER = "partido_id,match_id,fecha,local,visitante,jugador_id,jugador,pais,rating,criterio,fuente,actualizado_en,es_ejemplo";
-
-function clean(v){ return String(v ?? "").replace(/,/g," ").replace(/\s+/g," ").trim(); }
-function num(v){ const m = String(v ?? "").replace(",",".").match(/-?\d+(\.\d+)?/); return m ? m[0] : "0"; }
-function todayIso(){ return new Date().toISOString(); }
-function rivalFor(pais){ const local = clean(document.getElementById("local").value); const visitante = clean(document.getElementById("visitante").value); return pais === local ? visitante : local; }
-
-function parseLine(line){
-  const cols = line.split("\t").map(clean).filter(Boolean);
-  if (cols.length < 2) return null;
-  if (/goles|asistencias|pases|duelos|minutos|jugador/i.test(cols.join(" ")) && !/\d/.test(cols[0])) return null;
-
-  let name = cols[0];
-  let values = cols.slice(1);
-  if (/^[A-Z]{2,3}$/.test(name) && cols[1]) { name = cols[1]; values = cols.slice(2); }
-
-  const numbers = values.map(num);
-  const lastRating = values.map(v => String(v).replace(",",".")).reverse().find(v => /^\d+(\.\d+)?$/.test(v) && Number(v) <= 10);
-  const minutesCandidate = values.find(v => /^\d{1,3}$/.test(v) && Number(v) <= 130);
-
-  return {
-    jugador: name,
-    goles: numbers[0] || "0",
-    asistencias: numbers[1] || "0",
-    minutos: minutesCandidate || numbers[numbers.length - 1] || "0",
-    rating: lastRating || "0",
-    faltas_cometidas: "0",
-    faltas_recibidas: "0",
-    fueras_juego: "0",
-    amarillas: "0",
-    rojas: "0"
-  };
+const JUGADORES_HEADER="partido_id,match_id,fecha,jugador_id,jugador,pais,rival,posicion,titular,minutos,goles,asistencias,disparos,tiros_puerta,pases_clave,regates_exitosos,faltas_cometidas,faltas_recibidas,fueras_juego,rating,fecha_nacimiento,fuente,actualizado_en,es_ejemplo";
+const DISCIPLINA_HEADER="partido_id,match_id,fecha,jugador_id,jugador,pais,rival,amarillas,segundas_amarillas,rojas,faltas_cometidas,faltas_recibidas,fuente,actualizado_en,es_ejemplo";
+const PORTEROS_HEADER="partido_id,match_id,fecha,portero_id,portero,pais,rival,titular,minutos,saves,saves_area,goles_encajados,porterias_cero,penaltis_parados,rating,fuente,actualizado_en,es_ejemplo";
+const MOTM_HEADER="partido_id,match_id,fecha,local,visitante,jugador_id,jugador,pais,rating,criterio,fuente,actualizado_en,es_ejemplo";
+const FLAG_TEAM={"🇸🇪":"local","🇹🇳":"visitante","🇩🇪":"local","🇨🇼":"visitante","🇲🇽":"local","🇿🇦":"visitante","🇪🇸":"local","🇺🇾":"visitante","🇧🇷":"local","🇲🇦":"visitante"};
+const HEADER_WORDS=/goles|asistencias|tiros|pases|duelos|minutos|jugador|estadisticas|alineaciones|porteria|defensa|atacante|notas|valoracion|posición|posicion|regates|intercepciones|faltas/i;
+const BAD_NAMES=/^(general|atacante|defensa|pases|duelos|portería|porteria|notas|valoración|valoracion|posición|posicion|m|f|d|gk|-|\d+)$/i;
+function clean(v){return String(v??"").replace(/,/g," ").replace(/\s+/g," ").trim()}
+function csv(v){return clean(v)}
+function now(){return clean(document.getElementById('updatedAt').value)||new Date().toISOString()}
+function n(v){const m=String(v??"").replace(",",".").match(/-?\d+(\.\d+)?/);return m?m[0]:"0"}
+function intn(v){return String(Math.round(Number(n(v))||0))}
+function inside(v){const m=String(v??"").match(/\(([-\d.]+)\)/);return m?m[1]:n(v)}
+function normName(s){return clean(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+function getMeta(){const local=clean(document.getElementById('local').value),visitante=clean(document.getElementById('visitante').value);return{partidoId:clean(document.getElementById('partidoId').value),matchId:clean(document.getElementById('matchId').value),fecha:clean(document.getElementById('fecha').value),local,visitante,defaultTeam:document.getElementById('defaultTeam').value,posDefault:clean(document.getElementById('posDefault').value)||"M",updated:now()}}
+function emptyPlayer(name,team,meta){const pais=team==='visitante'?meta.visitante:meta.local;const rival=team==='visitante'?meta.local:meta.visitante;return{jugador:name,pais,rival,posicion:meta.posDefault,titular:true,minutos:0,goles:0,asistencias:0,disparos:0,tiros_puerta:0,pases_clave:0,regates_exitosos:0,faltas_cometidas:0,faltas_recibidas:0,fueras_juego:0,rating:0,saves:0,saves_area:0,goles_encajados:0,porterias_cero:0,penaltis_parados:0,es_portero:false,amarillas:0,rojas:0,segundas_amarillas:0}}
+function splitRows(raw){return String(raw||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
+function cells(line){let arr=line.split('\t').map(clean).filter(Boolean);if(arr.length<2)arr=line.split(/\s{2,}/).map(clean).filter(Boolean);return arr}
+function detectTeam(line,meta){for(const [flag,side] of Object.entries(FLAG_TEAM)){if(line.includes(flag))return side}return meta.defaultTeam}
+function extractName(cols){for(const c of cols){const value=clean(c);if(!value||HEADER_WORDS.test(value)||BAD_NAMES.test(value))continue;if(/[A-Za-zÀ-ÿ]/.test(value)&&!/^[-+]?\d/.test(value)&&value.length>2)return value}return""}
+function afterName(cols,name){const i=cols.findIndex(c=>clean(c)===name);return i>=0?cols.slice(i+1):cols.slice(1)}
+function ratingFrom(vals){const candidates=vals.map(x=>String(x).replace(",",".").trim()).filter(x=>/^\d+(\.\d+)?$/.test(x)&&Number(x)>0&&Number(x)<=10);return candidates.length?candidates[candidates.length-1]:"0"}
+function posFrom(vals,current){const p=vals.map(clean).find(x=>/^(G|GK|P|D|M|F|POR|DEF|MED|DEL)$/i.test(x));return p||current}
+function mergeRow(map,line,mode,meta){if(HEADER_WORDS.test(line)&&!/[A-Za-zÀ-ÿ]{3,}\s+[A-Za-zÀ-ÿ]{2,}/.test(line))return;const cols=cells(line);const name=extractName(cols);if(!name)return;const key=normName(name);const team=detectTeam(line,meta);if(!map[key])map[key]=emptyPlayer(name,team,meta);const p=map[key];const vals=afterName(cols,name);const rate=ratingFrom(vals);if(Number(rate)>Number(p.rating))p.rating=rate;p.posicion=posFrom(vals,p.posicion);if(/^g|por|gk$/i.test(p.posicion))p.es_portero=true;
+  if(mode==='general'){p.goles=Number(n(vals[0]))||p.goles;p.asistencias=Number(n(vals[1]))||p.asistencias;const mins=vals.map(n).filter(x=>Number(x)>10&&Number(x)<=130).pop();if(mins)p.minutos=Number(mins)}
+  if(mode==='atacante'){p.tiros_puerta=Number(n(vals[0]))||p.tiros_puerta;p.disparos=Math.max(Number(p.disparos)||0,Number(n(vals[0]))+Number(n(vals[2]))+Number(n(vals[3])));p.regates_exitosos=Number(inside(vals[4]))||p.regates_exitosos}
+  if(mode==='defensa'){p.disparos=Math.max(Number(p.disparos)||0,Number(n(vals[2])));p.tiros_bloqueados=Number(n(vals[2]))||0;p.intercepciones=Number(n(vals[3]))||0;p.entradas_ganadas=Number(n(vals[4]))||0}
+  if(mode==='pases'){p.toques=Number(n(vals[0]))||0;p.pases_precisos=clean(vals[1]||"");p.pases_clave=Number(n(vals[2]))||p.pases_clave;p.centros_acertados=inside(vals[3]||0);p.pases_largos_acertados=inside(vals[4]||0)}
+  if(mode==='duelos'){p.faltas_cometidas=Number(n(vals[4]))||p.faltas_cometidas;p.faltas_recibidas=Number(n(vals[5]))||p.faltas_recibidas;p.fueras_juego=Number(n(vals[6]))||p.fueras_juego;if(vals.length>=8)p.posicion=posFrom(vals.slice(7),p.posicion)}
+  if(mode==='porteria'){p.es_portero=true;p.posicion='GK';p.saves=Number(n(vals[0]))||p.saves;p.goles_evitados=Number(n(vals[1]))||0;p.punios=Number(n(vals[2]))||0;p.saves_area=Number(n(vals[3]))||p.saves_area}
 }
-
-function convertir(){
-  const partidoId = clean(document.getElementById("partidoId").value);
-  const matchId = clean(document.getElementById("matchId").value);
-  const fecha = clean(document.getElementById("fecha").value);
-  const pais = clean(document.getElementById("pais").value);
-  const local = clean(document.getElementById("local").value);
-  const visitante = clean(document.getElementById("visitante").value);
-  const rival = rivalFor(pais);
-  const now = todayIso();
-  const raw = document.getElementById("raw").value;
-  const rows = raw.split(/\r?\n/).map(parseLine).filter(Boolean);
-
-  if (!partidoId || !matchId || !fecha || !pais) { document.getElementById("status").textContent = "Rellena partido_id, match_id, fecha y equipo."; return; }
-  if (!rows.length) { document.getElementById("status").textContent = "No he detectado filas. Prueba a copiar una tabla con tabulaciones."; return; }
-
-  const jugadores = rows.map(r => [partidoId,matchId,fecha,"",r.jugador,pais,rival,"",true,r.minutos,r.goles,r.asistencias,0,0,0,0,r.faltas_cometidas,r.faltas_recibidas,r.fueras_juego,r.rating,"","manual",now,false].map(clean).join(","));
-  const disciplina = rows.map(r => [partidoId,matchId,fecha,"",r.jugador,pais,rival,r.amarillas,0,r.rojas,r.faltas_cometidas,r.faltas_recibidas,"manual",now,false].map(clean).join(","));
-  const best = [...rows].sort((a,b)=>Number(b.rating)-Number(a.rating))[0];
-  const motm = best && Number(best.rating) > 0 ? [[partidoId,matchId,fecha,local,visitante,"",best.jugador,pais,best.rating,"rating_mas_alto_visible","manual",now,false].map(clean).join(",")] : [];
-
-  document.getElementById("jugadoresOut").textContent = JUGADORES_HEADER + "\n" + jugadores.join("\n");
-  document.getElementById("disciplinaOut").textContent = DISCIPLINA_HEADER + "\n" + disciplina.join("\n");
-  document.getElementById("motmOut").textContent = MOTM_HEADER + "\n" + motm.join("\n");
-  document.getElementById("status").textContent = `Convertidos ${rows.length} jugadores. Revisa goles/asistencias/minutos porque SofaScore cambia columnas según pestaña.`;
-  renderPreview(rows);
-}
-
-function renderPreview(rows){
-  document.getElementById("preview").innerHTML = `<table><thead><tr><th>Jugador</th><th>Goles</th><th>Asist.</th><th>Min.</th><th>Rating</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${clean(r.jugador)}</td><td>${r.goles}</td><td>${r.asistencias}</td><td>${r.minutos}</td><td>${r.rating}</td></tr>`).join("")}</tbody></table>`;
-}
-
-async function copyText(id){
-  const text = document.getElementById(id).textContent;
-  await navigator.clipboard.writeText(text);
-  document.getElementById("status").textContent = "Copiado al portapapeles.";
-}
-
-function cargarEjemplo(){
-  document.getElementById("partidoId").value = "SWE-TUN-2026";
-  document.getElementById("matchId").value = "15186951";
-  document.getElementById("fecha").value = "2026-06-15";
-  document.getElementById("local").value = "Sweden";
-  document.getElementById("visitante").value = "Tunisia";
-  document.getElementById("pais").value = "Sweden";
-  document.getElementById("raw").value = "Yasin Ayari\t2\t0\t90\t8.8\nAlexander Isak\t1\t2\t89\t8.6\nViktor Gyokeres\t1\t1\t90\t8.2";
-}
+function parseAll(){const meta=getMeta();const map={};[['rawGeneral','general'],['rawAtacante','atacante'],['rawDefensa','defensa'],['rawPases','pases'],['rawDuelos','duelos'],['rawPorteria','porteria']].forEach(([id,mode])=>splitRows(document.getElementById(id).value).forEach(line=>mergeRow(map,line,mode,meta)));return{meta,rows:Object.values(map)}}
+function convertirTodo(){const {meta,rows}=parseAll();if(!meta.partidoId||!meta.matchId||!meta.fecha||!meta.local||!meta.visitante){status('Rellena partido_id, match_id, fecha, local y visitante.');return}if(!rows.length){status('No he detectado jugadores. Copia filas de SofaScore y pégalas en alguna caja.');return}
+ const jugadores=rows.map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.posicion,r.titular,r.minutos,r.goles,r.asistencias,r.disparos,r.tiros_puerta,r.pases_clave,r.regates_exitosos,r.faltas_cometidas,r.faltas_recibidas,r.fueras_juego,r.rating,'','manual',meta.updated,false].map(csv).join(','));
+ const disciplina=rows.map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.amarillas,r.segundas_amarillas,r.rojas,r.faltas_cometidas,r.faltas_recibidas,'manual',meta.updated,false].map(csv).join(','));
+ const porteros=rows.filter(r=>r.es_portero||Number(r.saves)>0).map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.titular,r.minutos,r.saves,r.saves_area,r.goles_encajados,r.porterias_cero,r.penaltis_parados,r.rating,'manual',meta.updated,false].map(csv).join(','));
+ const best=[...rows].sort((a,b)=>Number(b.rating)-Number(a.rating))[0];const motm=best&&Number(best.rating)>0?[[meta.partidoId,meta.matchId,meta.fecha,meta.local,meta.visitante,'',best.jugador,best.pais,best.rating,'rating_mas_alto_visible','manual',meta.updated,false].map(csv).join(',')]:[];
+ const jsonl=rows.map(r=>JSON.stringify({jugador:r.jugador,pais:r.pais,rival:r.rival,stats_json:{posicion:r.posicion,titular:r.titular,minutos:Number(r.minutos)||0,goles:Number(r.goles)||0,asistencias:Number(r.asistencias)||0,disparos:Number(r.disparos)||0,tiros_puerta:Number(r.tiros_puerta)||0,pases_clave:Number(r.pases_clave)||0,regates_exitosos:Number(r.regates_exitosos)||0,amarillas:Number(r.amarillas)||0,rojas:Number(r.rojas)||0,faltas_cometidas:Number(r.faltas_cometidas)||0,faltas_recibidas:Number(r.faltas_recibidas)||0,fueras_juego:Number(r.fueras_juego)||0,rating:Number(r.rating)||0,es_portero:!!r.es_portero,saves:Number(r.saves)||0,goles_encajados:Number(r.goles_encajados)||0,porterias_cero:Number(r.porterias_cero)||0,penaltis_parados:Number(r.penaltis_parados)||0,motm:best&&best.jugador===r.jugador}}));
+ setOut('jugadoresOut',JUGADORES_HEADER,jugadores);setOut('disciplinaOut',DISCIPLINA_HEADER,disciplina);setOut('porterosOut',PORTEROS_HEADER,porteros);setOut('motmOut',MOTM_HEADER,motm);document.getElementById('jsonOut').textContent=jsonl.join('\n');preview(rows);status(`Convertidos ${rows.length} jugadores. Porteros detectados: ${porteros.length}. MOTM detectado: ${best?best.jugador:'sin rating'}.`)}
+function setOut(id,header,rows){document.getElementById(id).textContent=header+'\n'+rows.join('\n')}
+function status(t){document.getElementById('status').textContent=t}
+function preview(rows){document.getElementById('preview').innerHTML='<table><thead><tr><th>Jugador</th><th>Equipo</th><th>Pos</th><th>Min</th><th>G</th><th>A</th><th>Tiros puerta</th><th>Pases clave</th><th>Faltas</th><th>Recibió</th><th>FJ</th><th>Paradas</th><th>Rating</th></tr></thead><tbody>'+rows.sort((a,b)=>Number(b.rating)-Number(a.rating)).map(r=>`<tr><td><strong>${csv(r.jugador)}</strong></td><td>${csv(r.pais)}</td><td><span class="pill">${csv(r.posicion)}</span></td><td>${r.minutos}</td><td>${r.goles}</td><td>${r.asistencias}</td><td>${r.tiros_puerta}</td><td>${r.pases_clave}</td><td>${r.faltas_cometidas}</td><td>${r.faltas_recibidas}</td><td>${r.fueras_juego}</td><td>${r.saves}</td><td><strong>${r.rating}</strong></td></tr>`).join('')+'</tbody></table>'}
+async function copyText(id){const text=document.getElementById(id).textContent;await navigator.clipboard.writeText(text);status('Copiado al portapapeles.')}
+function limpiarTodo(){document.querySelectorAll('textarea').forEach(t=>t.value='');['jugadoresOut','disciplinaOut','porterosOut','motmOut','jsonOut'].forEach(id=>document.getElementById(id).textContent='');document.getElementById('preview').textContent='Todavía no hay datos convertidos.';status('Limpio.')}
+function cargarEjemplo(){document.getElementById('partidoId').value='SWE-TUN-2026';document.getElementById('matchId').value='15186951';document.getElementById('fecha').value='2026-06-15';document.getElementById('local').value='Sweden';document.getElementById('visitante').value='Tunisia';document.getElementById('defaultTeam').value='local';document.getElementById('rawAtacante').value='🇸🇪\tYasin Ayari\t2\t0.07\t0\t0\t1 (0)\t-\tM\t8.7\n🇸🇪\tAlexander Isak\t2\t0.32\t0\t1\t2 (0)\tOcas. claras falladas: 1\tF\t8.6\n🇸🇪\tViktor Gyokeres\t2\t0.63\t2\t1\t3 (1)\tOcas. claras falladas: 1\tF\t8.0';document.getElementById('rawDuelos').value='🇸🇪\tYasin Ayari\t11 (4)\t10 (4)\t1 (0)\t19\t1\t1\t0\tM\t8.7\n🇸🇪\tAlexander Isak\t9 (1)\t7 (1)\t2 (0)\t9\t1\t0\t3\tF\t8.6\n🇸🇪\tGabriel Gudmundsson\t10 (7)\t7 (4)\t3 (3)\t10\t2\t3\t0\tM\t7.3';document.getElementById('rawPases').value='🇸🇪\tYasin Ayari\t50\t17/27 (63%)\t2\t5 (1)\t3 (2)\t-\tM\t8.7\n🇸🇪\tAlexander Isak\t35\t14/17 (82%)\t2\t1 (0)\t0\tOcas. claras creadas: 2\tF\t8.6';document.getElementById('rawPorteria').value='🇸🇪\tKristoffer Nordfeldt\t1\t-0.65\t0\t1\t-\tGK\t6.5'}
 </script>
 </body>
 </html>
