@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conversor SofaScore partido completo</title>
+  <title>Conversor SofaScore a CSV</title>
   <style>
     :root{--bg:#071f2a;--card:#fff;--text:#111827;--muted:#64748b;--line:#dbe3ec;--blue:#0f5fd7;--green:#00a870;--orange:#f97316;--red:#dc2626}
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,sans-serif;background:linear-gradient(135deg,#082f49,#064e3b);color:var(--text)}
-    .page{width:min(1500px,calc(100% - 28px));margin:0 auto;padding:28px 0 54px}.hero{color:#fff;margin-bottom:22px}.hero h1{margin:0 0 10px;font-size:clamp(2rem,5vw,4.5rem);line-height:.92;letter-spacing:-.06em}.hero p{max-width:980px;line-height:1.55;color:rgba(255,255,255,.86)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.card{background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.35);border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.2)}.full{grid-column:1/-1}.card h2{margin:0 0 10px;font-size:1.25rem}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.paste-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.paste-box h3{margin:0 0 6px;font-size:1rem}.paste-box small{color:var(--muted);display:block;margin-bottom:6px}
-    label{display:block;font-weight:900;margin:10px 0 6px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 13px;font:inherit;background:#fff}textarea{min-height:120px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.84rem}.big textarea{min-height:170px}.hint{color:var(--muted);font-size:.92rem;line-height:1.45}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:999px;padding:12px 18px;font-weight:900;cursor:pointer;color:white;background:linear-gradient(135deg,var(--blue),var(--green))}.btn-secondary{background:#eef4fb;color:#0f2850;border:1px solid var(--line)}.btn-red{background:linear-gradient(135deg,var(--red),var(--orange))}.status{margin-top:12px;font-weight:900;color:#064e3b}
-    pre{white-space:pre;overflow:auto;background:#08111f;color:#d8f3dc;padding:14px;border-radius:14px;min-height:120px;font-size:.85rem}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.86rem}th,td{border-bottom:1px solid var(--line);text-align:left;padding:8px;vertical-align:top}th{color:#0f2850;background:#f4f7fb;position:sticky;top:0}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;background:#e8f3ff;color:#064fb4;font-weight:900;font-size:.78rem}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:12px;margin-top:10px}.ok{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px;margin-top:10px}
-    @media(max-width:950px){.grid,.paste-grid{grid-template-columns:1fr}.meta{grid-template-columns:1fr}.page{width:min(100% - 18px,1500px)}textarea{min-height:150px}}
+    .page{width:min(1450px,calc(100% - 24px));margin:0 auto;padding:28px 0 60px}.hero{color:#fff;margin-bottom:20px}.hero h1{margin:0 0 10px;font-size:clamp(2rem,5vw,4.2rem);line-height:.95;letter-spacing:-.06em}.hero p{max-width:1000px;color:rgba(255,255,255,.86);line-height:1.55}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.36);border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.18)}.full{grid-column:1/-1}.card h2{margin:0 0 10px}.card h3{margin:0 0 8px}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.paste-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    label{display:block;font-weight:900;margin:10px 0 6px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 13px;font:inherit;background:#fff}textarea{min-height:125px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.84rem}.hint{color:var(--muted);font-size:.92rem;line-height:1.45}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:999px;padding:12px 18px;font-weight:900;cursor:pointer;color:white;background:linear-gradient(135deg,var(--blue),var(--green))}.btn-secondary{background:#eef4fb;color:#0f2850;border:1px solid var(--line)}.btn-red{background:linear-gradient(135deg,var(--red),var(--orange))}.btn-orange{background:linear-gradient(135deg,#f59e0b,#f97316)}.status{margin-top:12px;font-weight:900;color:#064e3b}
+    pre{white-space:pre;overflow:auto;background:#08111f;color:#d8f3dc;padding:14px;border-radius:14px;min-height:120px;font-size:.84rem}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.86rem}th,td{border-bottom:1px solid var(--line);text-align:left;padding:8px;vertical-align:top}th{background:#f4f7fb;color:#0f2850}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:12px;margin:10px 0}.ok{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px;margin:10px 0}.danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:14px;padding:12px;margin:10px 0}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;background:#e8f3ff;color:#064fb4;font-weight:900;font-size:.78rem}
+    @media(max-width:950px){.grid,.paste-grid{grid-template-columns:1fr}.meta{grid-template-columns:1fr}.page{width:min(100% - 16px,1450px)}textarea{min-height:150px}}
   </style>
 </head>
 <body>
 <main class="page">
   <section class="hero">
-    <h1>Conversor SofaScore → CSV por partido completo</h1>
-    <p>Pega las tablas visibles de SofaScore por pestaña: <strong>General, Atacante, Defensa, Pases, Duelos y Portería</strong>. La herramienta fusiona jugadores por nombre y genera líneas para tus CSVs y JSON para el workflow manual.</p>
+    <h1>Conversor SofaScore → CSV por partido</h1>
+    <p>Pega las tablas visibles de SofaScore por pestaña. Esta herramienta no llama a ninguna API: convierte lo que ya puedes ver en pantalla en CSV descargable o copiable.</p>
   </section>
 
   <section class="grid">
@@ -31,1523 +31,229 @@
         <div><label>actualizado_en</label><input id="updatedAt" placeholder="auto"></div>
         <div><label>local</label><input id="local" placeholder="Sweden"></div>
         <div><label>visitante</label><input id="visitante" placeholder="Tunisia"></div>
-        <div><label>equipo por defecto si no detecta bandera</label><select id="defaultTeam"><option value="local">Local</option><option value="visitante">Visitante</option></select></div>
+        <div><label>equipo por defecto</label><select id="defaultTeam"><option value="local">Local</option><option value="visitante">Visitante</option></select></div>
         <div><label>posición por defecto</label><input id="posDefault" placeholder="M"></div>
       </div>
-      <div class="warn"><strong>Forma rápida:</strong> copia una tabla de SofaScore, pégala en su caja y repite con las pestañas. Si el copiado no trae banderas, usa el selector “equipo por defecto” y convierte una selección cada vez.</div>
-    </div>
-
-    <div class="card full big">
-      <h2>2. Pega las tablas de SofaScore</h2>
-      <p class="hint">No pasa nada si una caja queda vacía. Cuantas más pestañas pegues, más completo será el CSV. Pega filas completas, no capturas.</p>
-      <div class="paste-grid">
-        <div class="paste-box"><h3>General</h3><small>Goles, asistencias, minutos, rating si aparece.</small><textarea id="rawGeneral" placeholder="Goles
-Asistencias
-Entradas (ganadas)
-Pases precisos
-Duelos (ganados)
-Duelos en el suelo (ganados)
-Duelos aéreos (ganados)
-Minutos jugados
-Posición
-Valoración Sofascore
-Sweden
-Yasin Ayari
-2
-3
-17/27 (63%)
-11 (4)
-10 (4)
-1 (0)
-90'
-M
-Sweden
-Alexander Isak
-1
-2
-1
-14/17 (82%)
-9 (1)
-7 (1)
-2 (0)
-89'
-F
-Sweden
-Viktor Gyökeres
-1
-1
-17/20 (85%)
-9 (3)
-6 (1)
-3 (2)
-90'
-F
-Sweden
-Mattias Svanberg
-1
-1/2 (50%)
-0 (0)
-13'
-M
-Sweden
-Gabriel Gudmundsson
-0
-2
-19/23 (83%)
-10 (7)
-7 (4)
-3 (3)
-65'
-M
-Tunisia
-Hannibal Mejbri
-0
-1
-5
-37/54 (69%)
-13 (11)
-12 (10)
-1 (1)
-90'
-M
-Sweden
-Benjamin Nygren
-0
-15/16 (94%)
-7 (3)
-6 (2)
-1 (1)
-65'
-M
-Tunisia
-Montassar Talbi
-0
-1
-36/38 (95%)
-4 (4)
-1 (1)
-3 (3)
-90'
-D
-Sweden
-Lucas Bergvall
-0
-1
-1
-4/6 (67%)
-4 (2)
-4 (2)
-25'
-M
-Tunisia
-Amine Ben Hmida
-0
-5
-46/50 (92%)
-10 (6)
-6 (6)
-4 (0)
-90'
-D
-Sweden
-Elliot Stroud
-0
-1
-6/8 (75%)
-2 (1)
-1 (1)
-1 (0)
-25'
-M
-Sweden
-Gustaf Lagerbielke
-0
-38/53 (72%)
-6 (2)
-1 (1)
-5 (1)
-90'
-D
-Tunisia
-Omar Rekik
-1
-2
-37/48 (77%)
-5 (5)
-3 (3)
-2 (2)
-90'
-D
-Sweden
-Alexander Bernhardsson
-0
-3
-14/21 (67%)
-16 (8)
-13 (6)
-3 (2)
-89'
-M
-Sweden
-Isak Hien
-0
-1
-48/54 (89%)
-7 (5)
-2 (2)
-5 (3)
-90'
-D
-Tunisia
-Mohamed Belhadj Mahmoud
-0
-2
-6/6 (100%)
-2 (2)
-2 (2)
-18'
-M
-Tunisia
-Elias Saad
-0
-1
-16/20 (80%)
-10 (4)
-8 (4)
-2 (0)
-72'
-F
-Tunisia
-Firas Chaouat
-0
-2/3 (67%)
-2 (1)
-0 (0)
-2 (1)
-13'
-F
-Tunisia
-Elias Achouri
-0
-2/2 (100%)
-1 (1)
-1 (1)
-18'
-M
-Sweden
-Jesper Karlström
-0
-1
-13/21 (62%)
-5 (2)
-2 (1)
-3 (1)
-84'
-M
-Sweden
-Kristoffer Nordfeldt
-0
-19/28 (68%)
-0 (0)
-90'
-G
-Tunisia
-Sebastian Tounekti
-0
-4/4 (100%)
-4 (0)
-4 (0)
-18'
-F
-Sweden
-Victor Lindelöf
-0
-1
-51/57 (89%)
-6 (3)
-3 (1)
-3 (2)
-90'
-D
-Tunisia
-Rani Khedira
-0
-1
-11/15 (73%)
-3 (1)
-3 (1)
-83'
-M
-Tunisia
-Anis Ben Slimane
-0
-23/33 (70%)
-8 (4)
-1 (0)
-7 (4)
-84'
-F
-Tunisia
-Ellyes Skhiri
-0
-2
-30/37 (81%)
-4 (2)
-4 (2)
-72'
-M
-Tunisia
-Ismael Gharbi
-0
-3/3 (100%)
-1 (0)
-1 (0)
-14'
-F
-Tunisia
-Yan Valery
-0
-14/18 (78%)
-11 (4)
-7 (3)
-4 (1)
-72'
-D
-Tunisia
-Ali Abdi
-0
-2
-14/21 (67%)
-13 (6)
-8 (3)
-5 (3)
-90'
-D
-Tunisia
-Abdelmouhib Chamakh
-0
-11/19 (58%)
-1 (0)
-1 (0)
-90'
-G
-Sweden
-Anthony Elanga
-0
-0 (0)
-1'
-F
-Sweden
-Daniel Svensson
-0
-2/3 (67%)
-0 (0)
-1'
-D
-"></textarea></div>
-        <div class="paste-box"><h3>Atacante</h3><small>Tiros, xG, tiros fuera/bloqueados, regates.</small><textarea id="rawAtacante" placeholder="	
-Sweden
-+
-Tunisia
-Sweden
-Tunisia
-Tiros a puerta
-Goles esperados (xG)
-Tiros fuera
-Tiros bloqueados
-Regates (completados)
-Notas
-Posición
-Valoración Sofascore
-Sweden
-Yasin Ayari
-2
-0.07
-0
-1 (0)
--
-M
-Sweden
-Alexander Isak
-2
-0.32
-1
-2 (0)
-Ocas. claras falladas: 1
-F
-Sweden
-Viktor Gyökeres
-2
-0.63
-2
-1
-3 (1)
-Ocas. claras falladas: 1
-F
-Sweden
-Mattias Svanberg
-1
-0.09
-0
-0 (0)
--
-M
-Tunisia
-Omar Rekik
-1
-0.03
-0
-0 (0)
--
-D
-Tunisia
-Elias Achouri
-1
-0.01
-0
-0 (0)
--
-M
-Sweden
-Gabriel Gudmundsson
-0
--
-0
-0 (0)
--
-M
-Tunisia
-Hannibal Mejbri
-0
-0.03
-1
-0
-2 (2)
--
-M
-Sweden
-Benjamin Nygren
-0
--
-0
-2 (2)
--
-M
-Tunisia
-Montassar Talbi
-0
-0.15
-1
-0
-0 (0)
--
-D
-Sweden
-Lucas Bergvall
-0
-0.09
-1
-1 (1)
--
-M
-Tunisia
-Amine Ben Hmida
-0
--
-0
-0 (0)
--
-D
-Sweden
-Elliot Stroud
-0
--
-0
-0 (0)
--
-M
-Sweden
-Gustaf Lagerbielke
-0
--
-0
-0 (0)
--
-D
-Sweden
-Alexander Bernhardsson
-0
--
-0
-3 (1)
--
-M
-Sweden
-Isak Hien
-0
--
-0
-0 (0)
--
-D
-Tunisia
-Mohamed Belhadj Mahmoud
-0
--
-0
-0 (0)
--
-M
-Tunisia
-Elias Saad
-0
-0.03
-1
-0
-4 (1)
--
-F
-Tunisia
-Firas Chaouat
-0
--
-0
-0 (0)
--
-F
-Sweden
-Jesper Karlström
-0
--
-0
-0 (0)
--
-M
-Sweden
-Kristoffer Nordfeldt
-0
--
-0
-0 (0)
--
-G
-Tunisia
-Sebastian Tounekti
-0
--
-0
-2 (0)
--
-F
-Sweden
-Victor Lindelöf
-0
-0.14
-1
-0
-0 (0)
--
-D
-Tunisia
-Rani Khedira
-0
-0.02
-1
-0 (0)
--
-M
-Tunisia
-Anis Ben Slimane
-0
--
-0
-1 (0)
--
-F
-Tunisia
-Ellyes Skhiri
-0
--
-0
-1 (0)
--
-M
-Tunisia
-Ismael Gharbi
-0
--
-0
-0 (0)
--
-F
-Tunisia
-Yan Valery
-0
--
-0
-4 (3)
--
-D
-Tunisia
-Ali Abdi
-0
--
-0
-2 (1)
--
-D
-Tunisia
-Abdelmouhib Chamakh
-0
--
-0
-0 (0)
--
-G
-Sweden
-Anthony Elanga
-0
--
-0
-0 (0)
--
-F
-Sweden
-Daniel Svensson
-0
--
-0
-0 (0)
--
-D
-"></textarea></div>
-        <div class="paste-box"><h3>Defensa</h3><small>Acciones defensivas, despejes, intercepciones, entradas.</small><textarea id="rawDefensa" placeholder="	
-Sweden
-+
-Tunisia
-Sweden
-Tunisia
-Acciones defensivas
-Despejes
-Tiros bloqueados
-Intercepciones
-Entradas (ganadas)
-Regateado
-Notas
-Posición
-Valoración Sofascore
-Sweden
-Yasin Ayari
-6
-2
-0
-1
-3
-2
--
-M
-Sweden
-Alexander Isak
-1
-0
-0
-0
-1
-0
--
-F
-Sweden
-Viktor Gyökeres
-0
-0
-0
-0
--
-F
-Sweden
-Mattias Svanberg
-0
-0
-0
-0
--
-M
-Sweden
-Gabriel Gudmundsson
-8
-5
-0
-1
-2
-2
--
-M
-Tunisia
-Hannibal Mejbri
-5
-0
-0
-0
-5
-1
-Errores que llevan a disparo: 1
-M
-Sweden
-Benjamin Nygren
-0
-0
-0
-0
--
-M
-Tunisia
-Montassar Talbi
-10
-5
-3
-1
-1
-0
-Despejes en la línea de gol: 1
-D
-Sweden
-Lucas Bergvall
-3
-1
-0
-1
-1
-1
--
-M
-Tunisia
-Amine Ben Hmida
-10
-4
-1
-0
-5
-0
-Entradas como último hombre: 1
-D
-Sweden
-Elliot Stroud
-1
-0
-0
-0
-1
-0
--
-M
-Sweden
-Gustaf Lagerbielke
-3
-3
-0
-0
-0
--
-D
-Tunisia
-Omar Rekik
-5
-2
-0
-1
-2
-0
--
-D
-Sweden
-Alexander Bernhardsson
-6
-3
-0
-0
-3
-2
--
-M
-Sweden
-Isak Hien
-7
-4
-1
-1
-1
-0
--
-D
-Tunisia
-Mohamed Belhadj Mahmoud
-2
-0
-0
-0
-2
-0
--
-M
-Tunisia
-Elias Saad
-1
-0
-0
-0
-1
-0
--
-F
-Tunisia
-Firas Chaouat
-0
-0
-0
-0
--
-F
-Tunisia
-Elias Achouri
-0
-0
-0
-0
--
-M
-Sweden
-Jesper Karlström
-4
-2
-0
-1
-1
-0
--
-M
-Sweden
-Kristoffer Nordfeldt
-0
-0
-0
-0
--
-G
-Tunisia
-Sebastian Tounekti
-0
-0
-0
-1
--
-F
-Sweden
-Victor Lindelöf
-5
-3
-0
-1
-1
-0
--
-D
-Tunisia
-Rani Khedira
-1
-0
-0
-0
-1
-0
-Errores que llevan a disparo: 1
-M
-Tunisia
-Anis Ben Slimane
-0
-0
-0
-0
--
-F
-Tunisia
-Ellyes Skhiri
-4
-0
-0
-2
-2
-1
-Entradas como último hombre: 1
-Errores que llevan a gol: 1
-M
-Tunisia
-Ismael Gharbi
-0
-0
-0
-0
-Errores que llevan a gol: 1
-F
-Tunisia
-Yan Valery
-0
-0
-0
-0
--
-D
-Tunisia
-Ali Abdi
-3
-0
-0
-1
-2
-1
--
-D
-Tunisia
-Abdelmouhib Chamakh
-3
-2
-0
-1
-1
-Errores que llevan a gol: 2
-G
-Sweden
-Anthony Elanga
-0
-0
-0
-0
--
-F
-Sweden
-Daniel Svensson
-0
-0
-0
-0
-"></textarea></div>
-        <div class="paste-box"><h3>Pases</h3><small>Toques, pases precisos, pases clave, centros y pases largos.</small><textarea id="rawPases" placeholder="Tunisia
-Sweden
-Tunisia	
-Toques
-Pases precisos
-Pases clave
-Centros (acertados)
-Pases largos (acertados)
-Notas
-Posición
-Valoración Sofascore
-Sweden
-Yasin Ayari
-50
-17/27 (63%)
-2
-5 (1)
-3 (2)
--
-M
-Sweden
-Alexander Isak
-35
-14/17 (82%)
-2
-1 (0)
-Ocas. claras creadas: 2
-F
-Sweden
-Viktor Gyökeres
-38
-17/20 (85%)
-4
-Ocas. claras creadas: 1
-F
-Sweden
-Mattias Svanberg
-3
-1/2 (50%)
-0
-1 (0)
--
-M
-Sweden
-Gabriel Gudmundsson
-44
-19/23 (83%)
-0
-2 (1)
-3 (1)
--
-M
-Tunisia
-Hannibal Mejbri
-74
-37/54 (69%)
-3
-5 (2)
-14 (7)
--
-M
-Sweden
-Benjamin Nygren
-24
-15/16 (94%)
-1
-2 (1)
-1 (1)
--
-M
-Tunisia
-Montassar Talbi
-51
-36/38 (95%)
-0
-5 (4)
--
-D
-Sweden
-Lucas Bergvall
-14
-4/6 (67%)
-1
-1 (0)
--
-M
-Tunisia
-Amine Ben Hmida
-67
-46/50 (92%)
-0
-1 (0)
-4 (3)
--
-D
-Sweden
-Elliot Stroud
-11
-6/8 (75%)
-0
-1 (1)
--
-M
-Sweden
-Gustaf Lagerbielke
-58
-38/53 (72%)
-1
-15 (7)
--
-D
-Tunisia
-Omar Rekik
-58
-37/48 (77%)
-0
-1 (0)
-5 (1)
--
-D
-Sweden
-Alexander Bernhardsson
-45
-14/21 (67%)
-0
-1 (0)
-4 (1)
--
-M
-Sweden
-Isak Hien
-63
-48/54 (89%)
-0
-5 (1)
--
-D
-Tunisia
-Mohamed Belhadj Mahmoud
-12
-6/6 (100%)
-0
-1 (1)
--
-M
-Tunisia
-Elias Saad
-39
-16/20 (80%)
-0
-1 (1)
-2 (2)
--
-F
-Tunisia
-Firas Chaouat
-3
-2/3 (67%)
-0
--
-F
-Tunisia
-Elias Achouri
-5
-2/2 (100%)
-0
--
-M
-Sweden
-Jesper Karlström
-27
-13/21 (62%)
-1
-3 (0)
--
-M
-Sweden
-Kristoffer Nordfeldt
-31
-19/28 (68%)
-0
-17 (8)
--
-G
-Tunisia
-Sebastian Tounekti
-8
-4/4 (100%)
-0
--
-F
-Sweden
-Victor Lindelöf
-65
-51/57 (89%)
-0
-5 (0)
--
-D
-Tunisia
-Rani Khedira
-25
-11/15 (73%)
-0
-1 (0)
--
-M
-Tunisia
-Anis Ben Slimane
-36
-23/33 (70%)
-1
-2 (0)
--
-F
-Tunisia
-Ellyes Skhiri
-44
-30/37 (81%)
-0
-4 (2)
--
-M
-Tunisia
-Ismael Gharbi
-6
-3/3 (100%)
-0
-1 (0)
--
-F
-Tunisia
-Yan Valery
-35
-14/18 (78%)
-0
-2 (0)
-2 (0)
--
-D
-Tunisia
-Ali Abdi
-38
-14/21 (67%)
-0
-2 (0)
-2 (1)
--
-D
-Tunisia
-Abdelmouhib Chamakh
-28
-11/19 (58%)
-0
-11 (3)
--
-G
-Sweden
-Anthony Elanga
-0
-0/0
-0
--
-F
-Sweden
-Daniel Svensson
-5
-2/3 (67%)
-0
--
-D
-"></textarea></div>
-        <div class="paste-box"><h3>Duelos</h3><small>Faltas, recibió falta, fueras de juego, posición, valoración.</small><textarea id="rawDuelos" placeholder="	
-Sweden
-+
-Tunisia
-Sweden
-Tunisia
-Duelos (ganados)
-Duelos en el suelo (ganados)
-Duelos aéreos (ganados)
-Posesiones perdidas
-Faltas
-Recibió falta
-Fueras de juego
-Posición
-Valoración Sofascore
-Sweden
-Yasin Ayari
-11 (4)
-10 (4)
-1 (0)
-19
-1
-1
-M
-Sweden
-Alexander Isak
-9 (1)
-7 (1)
-2 (0)
-9
-1
-3
-F
-Sweden
-Viktor Gyökeres
-9 (3)
-6 (1)
-3 (2)
-13
-F
-Sweden
-Mattias Svanberg
-0 (0)
-1
-M
-Sweden
-Gabriel Gudmundsson
-10 (7)
-7 (4)
-3 (3)
-10
-2
-3
-M
-Tunisia
-Hannibal Mejbri
-13 (11)
-12 (10)
-1 (1)
-22
-3
-M
-Sweden
-Benjamin Nygren
-7 (3)
-6 (2)
-1 (1)
-6
-1
-M
-Tunisia
-Montassar Talbi
-4 (4)
-1 (1)
-3 (3)
-2
-D
-Sweden
-Lucas Bergvall
-4 (2)
-4 (2)
-4
-1
-M
-Tunisia
-Amine Ben Hmida
-10 (6)
-6 (6)
-4 (0)
-7
-1
-D
-Sweden
-Elliot Stroud
-2 (1)
-1 (1)
-1 (0)
-2
-M
-Sweden
-Gustaf Lagerbielke
-6 (2)
-1 (1)
-5 (1)
-16
-1
-D
-Tunisia
-Omar Rekik
-5 (5)
-3 (3)
-2 (2)
-12
-1
-D
-Sweden
-Alexander Bernhardsson
-16 (8)
-13 (6)
-3 (2)
-15
-2
-M
-Sweden
-Isak Hien
-7 (5)
-2 (2)
-5 (3)
-7
-1
-1
-D
-Tunisia
-Mohamed Belhadj Mahmoud
-2 (2)
-2 (2)
-1
-M
-Tunisia
-Elias Saad
-10 (4)
-8 (4)
-2 (0)
-12
-2
-1
-F
-Tunisia
-Firas Chaouat
-2 (1)
-0 (0)
-2 (1)
-1
-2
-F
-Tunisia
-Elias Achouri
-1 (1)
-1 (1)
-1
-1
-1
-M
-Sweden
-Jesper Karlström
-5 (2)
-2 (1)
-3 (1)
-8
-1
-M
-Sweden
-Kristoffer Nordfeldt
-0 (0)
-9
-G
-Tunisia
-Sebastian Tounekti
-4 (0)
-4 (0)
-4
-1
-F
-Sweden
-Victor Lindelöf
-6 (3)
-3 (1)
-3 (2)
-7
-2
-D
-Tunisia
-Rani Khedira
-3 (1)
-3 (1)
-8
-1
-M
-Tunisia
-Anis Ben Slimane
-8 (4)
-1 (0)
-7 (4)
-12
-2
-F
-Tunisia
-Ellyes Skhiri
-4 (2)
-4 (2)
-9
-M
-Tunisia
-Ismael Gharbi
-1 (0)
-1 (0)
-2
-F
-Tunisia
-Yan Valery
-11 (4)
-7 (3)
-4 (1)
-15
-3
-D
-Tunisia
-Ali Abdi
-13 (6)
-8 (3)
-5 (3)
-14
-3
-D
-Tunisia
-Abdelmouhib Chamakh
-1 (0)
-1 (0)
-8
-G
-Sweden
-Anthony Elanga
-0 (0)
-F
-Sweden
-Daniel Svensson
-0 (0)
-1
-D
-"></textarea></div>
-        <div class="paste-box"><h3>Portería</h3><small>Paradas, goles evitados, puños, salidas por alto, valoración.</small><textarea id="rawPorteria" placeholder="	
-Sweden
-+
-Tunisia
-Sweden
-Tunisia
-Paradas totales
-Goles evitados
-Con los puños
-Despejes por alto
-Notas
-Valoración Sofascore
-Sweden
-Kristoffer Nordfeldt
-1
--0.65
-0
-1
--
-Tunisia
-Abdelmouhib Chamakh
-1
--2.88
-0
-1
-Paradas a tiros desde dentro del área: 1
-Errores que llevan a gol: 2
-"></textarea></div>
-      </div>
-      <div class="actions">
-        <button onclick="convertirTodo()">Convertir todo</button>
-        <button class="btn-secondary" onclick="cargarEjemplo()">Cargar ejemplo Suecia - Túnez</button>
-        <button class="btn-red" onclick="limpiarTodo()">Limpiar</button>
-      </div>
-      <div id="status" class="status"></div>
+      <div class="warn"><strong>Importante:</strong> el botón <strong>Copiar CSV</strong> solo copia al portapapeles. Para ver un archivo real en tu PC, usa <strong>Descargar CSV</strong>. Para subirlo al repo, pega las líneas en el CSV correspondiente o usa el workflow manual.</div>
     </div>
 
     <div class="card full">
-      <h2>3. Vista previa fusionada</h2>
+      <h2>2. Pega las tablas de SofaScore</h2>
+      <p class="hint">Copia la tabla visible desde SofaScore con Ctrl+C y pégala en la caja de su pestaña. No hace falta que estén todas rellenas.</p>
+      <div class="paste-grid">
+        <div><h3>General</h3><textarea id="rawGeneral" placeholder="Pega aquí la tabla General"></textarea></div>
+        <div><h3>Atacante</h3><textarea id="rawAtacante" placeholder="Pega aquí la tabla Atacante"></textarea></div>
+        <div><h3>Defensa</h3><textarea id="rawDefensa" placeholder="Pega aquí la tabla Defensa"></textarea></div>
+        <div><h3>Pases</h3><textarea id="rawPases" placeholder="Pega aquí la tabla Pases"></textarea></div>
+        <div><h3>Duelos</h3><textarea id="rawDuelos" placeholder="Pega aquí la tabla Duelos"></textarea></div>
+        <div><h3>Portería</h3><textarea id="rawPorteria" placeholder="Pega aquí la tabla Portería"></textarea></div>
+      </div>
+      <div class="actions">
+        <button onclick="convertAll()">Convertir todo</button>
+        <button class="btn-secondary" onclick="clearAll()">Limpiar</button>
+      </div>
+      <div id="globalStatus" class="status"></div>
+    </div>
+
+    <div class="card full">
+      <h2>3. Vista previa</h2>
       <div id="preview" class="hint">Todavía no hay datos convertidos.</div>
     </div>
 
-    <div class="card full"><h2>jugadores_stats.csv</h2><button onclick="copyText('jugadoresOut')">Copiar jugadores</button><pre id="jugadoresOut"></pre></div>
-    <div class="card full"><h2>disciplina.csv</h2><button onclick="copyText('disciplinaOut')">Copiar disciplina</button><pre id="disciplinaOut"></pre></div>
-    <div class="card full"><h2>porteros_stats.csv</h2><button onclick="copyText('porterosOut')">Copiar porteros</button><pre id="porterosOut"></pre></div>
-    <div class="card full"><h2>partidos_motm.csv</h2><button onclick="copyText('motmOut')">Copiar MOTM</button><pre id="motmOut"></pre></div>
-    <div class="card full"><h2>stats_json para workflow “Add manual advanced stats”</h2><p class="hint">Copia una línea JSON y úsala en el campo <strong>stats_json</strong> del workflow si prefieres cargar jugador a jugador.</p><button onclick="copyText('jsonOut')">Copiar JSONL</button><pre id="jsonOut"></pre></div>
+    <div class="card">
+      <h2>jugadores_stats.csv</h2>
+      <div class="actions">
+        <button onclick="copyOutput('playersCsv')">Copiar CSV</button>
+        <button class="btn-orange" onclick="downloadOutput('playersCsv','jugadores_stats_nuevas_filas.csv')">Descargar CSV</button>
+      </div>
+      <pre id="playersCsv"></pre>
+    </div>
+
+    <div class="card">
+      <h2>disciplina.csv</h2>
+      <div class="actions">
+        <button onclick="copyOutput('disciplineCsv')">Copiar CSV</button>
+        <button class="btn-orange" onclick="downloadOutput('disciplineCsv','disciplina_nuevas_filas.csv')">Descargar CSV</button>
+      </div>
+      <pre id="disciplineCsv"></pre>
+    </div>
+
+    <div class="card">
+      <h2>porteros_stats.csv</h2>
+      <div class="actions">
+        <button onclick="copyOutput('keepersCsv')">Copiar CSV</button>
+        <button class="btn-orange" onclick="downloadOutput('keepersCsv','porteros_stats_nuevas_filas.csv')">Descargar CSV</button>
+      </div>
+      <pre id="keepersCsv"></pre>
+    </div>
+
+    <div class="card">
+      <h2>partidos_motm.csv</h2>
+      <div class="actions">
+        <button onclick="copyOutput('motmCsv')">Copiar CSV</button>
+        <button class="btn-orange" onclick="downloadOutput('motmCsv','partidos_motm_nuevas_filas.csv')">Descargar CSV</button>
+      </div>
+      <pre id="motmCsv"></pre>
+    </div>
+
+    <div class="card full">
+      <h2>stats_json para workflow manual</h2>
+      <p class="hint">Esto sirve si prefieres usar Actions → Add manual advanced stats. Copia el bloque de un jugador y pégalo en stats_json.</p>
+      <div class="actions">
+        <button onclick="copyOutput('jsonOutput')">Copiar JSON</button>
+        <button class="btn-orange" onclick="downloadOutput('jsonOutput','stats_json_generado.json')">Descargar JSON</button>
+      </div>
+      <pre id="jsonOutput"></pre>
+    </div>
   </section>
 </main>
 
 <script>
-const JUGADORES_HEADER="partido_id,match_id,fecha,jugador_id,jugador,pais,rival,posicion,titular,minutos,goles,asistencias,disparos,tiros_puerta,pases_clave,regates_exitosos,faltas_cometidas,faltas_recibidas,fueras_juego,rating,fecha_nacimiento,fuente,actualizado_en,es_ejemplo";
-const DISCIPLINA_HEADER="partido_id,match_id,fecha,jugador_id,jugador,pais,rival,amarillas,segundas_amarillas,rojas,faltas_cometidas,faltas_recibidas,fuente,actualizado_en,es_ejemplo";
-const PORTEROS_HEADER="partido_id,match_id,fecha,portero_id,portero,pais,rival,titular,minutos,saves,saves_area,goles_encajados,porterias_cero,penaltis_parados,rating,fuente,actualizado_en,es_ejemplo";
-const MOTM_HEADER="partido_id,match_id,fecha,local,visitante,jugador_id,jugador,pais,rating,criterio,fuente,actualizado_en,es_ejemplo";
-const FLAG_TEAM={"🇸🇪":"local","🇹🇳":"visitante","🇩🇪":"local","🇨🇼":"visitante","🇲🇽":"local","🇿🇦":"visitante","🇪🇸":"local","🇺🇾":"visitante","🇧🇷":"local","🇲🇦":"visitante"};
-const HEADER_WORDS=/goles|asistencias|tiros|pases|duelos|minutos|jugador|estadisticas|alineaciones|porteria|defensa|atacante|notas|valoracion|posición|posicion|regates|intercepciones|faltas/i;
-const BAD_NAMES=/^(general|atacante|defensa|pases|duelos|portería|porteria|notas|valoración|valoracion|posición|posicion|m|f|d|gk|-|\d+)$/i;
-function clean(v){return String(v??"").replace(/,/g," ").replace(/\s+/g," ").trim()}
-function csv(v){return clean(v)}
-function now(){return clean(document.getElementById('updatedAt').value)||new Date().toISOString()}
-function n(v){const m=String(v??"").replace(",",".").match(/-?\d+(\.\d+)?/);return m?m[0]:"0"}
-function intn(v){return String(Math.round(Number(n(v))||0))}
-function inside(v){const m=String(v??"").match(/\(([-\d.]+)\)/);return m?m[1]:n(v)}
-function normName(s){return clean(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
-function getMeta(){const local=clean(document.getElementById('local').value),visitante=clean(document.getElementById('visitante').value);return{partidoId:clean(document.getElementById('partidoId').value),matchId:clean(document.getElementById('matchId').value),fecha:clean(document.getElementById('fecha').value),local,visitante,defaultTeam:document.getElementById('defaultTeam').value,posDefault:clean(document.getElementById('posDefault').value)||"M",updated:now()}}
-function emptyPlayer(name,team,meta){const pais=team==='visitante'?meta.visitante:meta.local;const rival=team==='visitante'?meta.local:meta.visitante;return{jugador:name,pais,rival,posicion:meta.posDefault,titular:true,minutos:0,goles:0,asistencias:0,disparos:0,tiros_puerta:0,pases_clave:0,regates_exitosos:0,faltas_cometidas:0,faltas_recibidas:0,fueras_juego:0,rating:0,saves:0,saves_area:0,goles_encajados:0,porterias_cero:0,penaltis_parados:0,es_portero:false,amarillas:0,rojas:0,segundas_amarillas:0}}
-function splitRows(raw){return String(raw||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
-function cells(line){let arr=line.split('\t').map(clean).filter(Boolean);if(arr.length<2)arr=line.split(/\s{2,}/).map(clean).filter(Boolean);return arr}
-function detectTeam(line,meta){for(const [flag,side] of Object.entries(FLAG_TEAM)){if(line.includes(flag))return side}return meta.defaultTeam}
-function extractName(cols){for(const c of cols){const value=clean(c);if(!value||HEADER_WORDS.test(value)||BAD_NAMES.test(value))continue;if(/[A-Za-zÀ-ÿ]/.test(value)&&!/^[-+]?\d/.test(value)&&value.length>2)return value}return""}
-function afterName(cols,name){const i=cols.findIndex(c=>clean(c)===name);return i>=0?cols.slice(i+1):cols.slice(1)}
-function ratingFrom(vals){const candidates=vals.map(x=>String(x).replace(",",".").trim()).filter(x=>/^\d+(\.\d+)?$/.test(x)&&Number(x)>0&&Number(x)<=10);return candidates.length?candidates[candidates.length-1]:"0"}
-function posFrom(vals,current){const p=vals.map(clean).find(x=>/^(G|GK|P|D|M|F|POR|DEF|MED|DEL)$/i.test(x));return p||current}
-function mergeRow(map,line,mode,meta){if(HEADER_WORDS.test(line)&&!/[A-Za-zÀ-ÿ]{3,}\s+[A-Za-zÀ-ÿ]{2,}/.test(line))return;const cols=cells(line);const name=extractName(cols);if(!name)return;const key=normName(name);const team=detectTeam(line,meta);if(!map[key])map[key]=emptyPlayer(name,team,meta);const p=map[key];const vals=afterName(cols,name);const rate=ratingFrom(vals);if(Number(rate)>Number(p.rating))p.rating=rate;p.posicion=posFrom(vals,p.posicion);if(/^g|por|gk$/i.test(p.posicion))p.es_portero=true;
-  if(mode==='general'){p.goles=Number(n(vals[0]))||p.goles;p.asistencias=Number(n(vals[1]))||p.asistencias;const mins=vals.map(n).filter(x=>Number(x)>10&&Number(x)<=130).pop();if(mins)p.minutos=Number(mins)}
-  if(mode==='atacante'){p.tiros_puerta=Number(n(vals[0]))||p.tiros_puerta;p.disparos=Math.max(Number(p.disparos)||0,Number(n(vals[0]))+Number(n(vals[2]))+Number(n(vals[3])));p.regates_exitosos=Number(inside(vals[4]))||p.regates_exitosos}
-  if(mode==='defensa'){p.disparos=Math.max(Number(p.disparos)||0,Number(n(vals[2])));p.tiros_bloqueados=Number(n(vals[2]))||0;p.intercepciones=Number(n(vals[3]))||0;p.entradas_ganadas=Number(n(vals[4]))||0}
-  if(mode==='pases'){p.toques=Number(n(vals[0]))||0;p.pases_precisos=clean(vals[1]||"");p.pases_clave=Number(n(vals[2]))||p.pases_clave;p.centros_acertados=inside(vals[3]||0);p.pases_largos_acertados=inside(vals[4]||0)}
-  if(mode==='duelos'){p.faltas_cometidas=Number(n(vals[4]))||p.faltas_cometidas;p.faltas_recibidas=Number(n(vals[5]))||p.faltas_recibidas;p.fueras_juego=Number(n(vals[6]))||p.fueras_juego;if(vals.length>=8)p.posicion=posFrom(vals.slice(7),p.posicion)}
-  if(mode==='porteria'){p.es_portero=true;p.posicion='GK';p.saves=Number(n(vals[0]))||p.saves;p.goles_evitados=Number(n(vals[1]))||0;p.punios=Number(n(vals[2]))||0;p.saves_area=Number(n(vals[3]))||p.saves_area}
+const PLAYER_HEADER = ['partido_id','match_id','fecha','jugador_id','jugador','pais','rival','posicion','titular','minutos','goles','asistencias','disparos','tiros_puerta','pases_clave','regates_exitosos','faltas_cometidas','faltas_recibidas','fueras_juego','rating','fecha_nacimiento','fuente','actualizado_en','es_ejemplo'];
+const DISC_HEADER = ['partido_id','match_id','fecha','jugador_id','jugador','pais','rival','amarillas','segundas_amarillas','rojas','faltas_cometidas','faltas_recibidas','fuente','actualizado_en','es_ejemplo'];
+const GK_HEADER = ['partido_id','match_id','fecha','portero_id','portero','pais','rival','titular','minutos','saves','saves_area','goles_encajados','porterias_cero','penaltis_parados','rating','fuente','actualizado_en','es_ejemplo'];
+const MOTM_HEADER = ['partido_id','match_id','fecha','local','visitante','jugador_id','jugador','pais','rating','criterio','fuente','actualizado_en','es_ejemplo'];
+const POSITIONS = new Set(['G','GK','D','M','F','Goalkeeper','Defender','Midfielder','Forward','Portero','Defensa','Centrocampista','Delantero']);
+
+let lastRows = [];
+
+function meta(){
+  const local = val('local');
+  const visitante = val('visitante');
+  const def = document.getElementById('defaultTeam').value === 'visitante' ? visitante : local;
+  return {partido_id:val('partidoId'),match_id:val('matchId'),fecha:val('fecha'),local,visitante,defaultTeam:def,updated:val('updatedAt') || new Date().toISOString(),posDefault:val('posDefault') || 'M'};
 }
-function parseAll(){const meta=getMeta();const map={};[['rawGeneral','general'],['rawAtacante','atacante'],['rawDefensa','defensa'],['rawPases','pases'],['rawDuelos','duelos'],['rawPorteria','porteria']].forEach(([id,mode])=>splitRows(document.getElementById(id).value).forEach(line=>mergeRow(map,line,mode,meta)));return{meta,rows:Object.values(map)}}
-function convertirTodo(){const {meta,rows}=parseAll();if(!meta.partidoId||!meta.matchId||!meta.fecha||!meta.local||!meta.visitante){status('Rellena partido_id, match_id, fecha, local y visitante.');return}if(!rows.length){status('No he detectado jugadores. Copia filas de SofaScore y pégalas en alguna caja.');return}
- const jugadores=rows.map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.posicion,r.titular,r.minutos,r.goles,r.asistencias,r.disparos,r.tiros_puerta,r.pases_clave,r.regates_exitosos,r.faltas_cometidas,r.faltas_recibidas,r.fueras_juego,r.rating,'','manual',meta.updated,false].map(csv).join(','));
- const disciplina=rows.map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.amarillas,r.segundas_amarillas,r.rojas,r.faltas_cometidas,r.faltas_recibidas,'manual',meta.updated,false].map(csv).join(','));
- const porteros=rows.filter(r=>r.es_portero||Number(r.saves)>0).map(r=>[meta.partidoId,meta.matchId,meta.fecha,'',r.jugador,r.pais,r.rival,r.titular,r.minutos,r.saves,r.saves_area,r.goles_encajados,r.porterias_cero,r.penaltis_parados,r.rating,'manual',meta.updated,false].map(csv).join(','));
- const best=[...rows].sort((a,b)=>Number(b.rating)-Number(a.rating))[0];const motm=best&&Number(best.rating)>0?[[meta.partidoId,meta.matchId,meta.fecha,meta.local,meta.visitante,'',best.jugador,best.pais,best.rating,'rating_mas_alto_visible','manual',meta.updated,false].map(csv).join(',')]:[];
- const jsonl=rows.map(r=>JSON.stringify({jugador:r.jugador,pais:r.pais,rival:r.rival,stats_json:{posicion:r.posicion,titular:r.titular,minutos:Number(r.minutos)||0,goles:Number(r.goles)||0,asistencias:Number(r.asistencias)||0,disparos:Number(r.disparos)||0,tiros_puerta:Number(r.tiros_puerta)||0,pases_clave:Number(r.pases_clave)||0,regates_exitosos:Number(r.regates_exitosos)||0,amarillas:Number(r.amarillas)||0,rojas:Number(r.rojas)||0,faltas_cometidas:Number(r.faltas_cometidas)||0,faltas_recibidas:Number(r.faltas_recibidas)||0,fueras_juego:Number(r.fueras_juego)||0,rating:Number(r.rating)||0,es_portero:!!r.es_portero,saves:Number(r.saves)||0,goles_encajados:Number(r.goles_encajados)||0,porterias_cero:Number(r.porterias_cero)||0,penaltis_parados:Number(r.penaltis_parados)||0,motm:best&&best.jugador===r.jugador}}));
- setOut('jugadoresOut',JUGADORES_HEADER,jugadores);setOut('disciplinaOut',DISCIPLINA_HEADER,disciplina);setOut('porterosOut',PORTEROS_HEADER,porteros);setOut('motmOut',MOTM_HEADER,motm);document.getElementById('jsonOut').textContent=jsonl.join('\n');preview(rows);status(`Convertidos ${rows.length} jugadores. Porteros detectados: ${porteros.length}. MOTM detectado: ${best?best.jugador:'sin rating'}.`)}
-function setOut(id,header,rows){document.getElementById(id).textContent=header+'\n'+rows.join('\n')}
-function status(t){document.getElementById('status').textContent=t}
-function preview(rows){document.getElementById('preview').innerHTML='<table><thead><tr><th>Jugador</th><th>Equipo</th><th>Pos</th><th>Min</th><th>G</th><th>A</th><th>Tiros puerta</th><th>Pases clave</th><th>Faltas</th><th>Recibió</th><th>FJ</th><th>Paradas</th><th>Rating</th></tr></thead><tbody>'+rows.sort((a,b)=>Number(b.rating)-Number(a.rating)).map(r=>`<tr><td><strong>${csv(r.jugador)}</strong></td><td>${csv(r.pais)}</td><td><span class="pill">${csv(r.posicion)}</span></td><td>${r.minutos}</td><td>${r.goles}</td><td>${r.asistencias}</td><td>${r.tiros_puerta}</td><td>${r.pases_clave}</td><td>${r.faltas_cometidas}</td><td>${r.faltas_recibidas}</td><td>${r.fueras_juego}</td><td>${r.saves}</td><td><strong>${r.rating}</strong></td></tr>`).join('')+'</tbody></table>'}
-async function copyText(id){const text=document.getElementById(id).textContent;await navigator.clipboard.writeText(text);status('Copiado al portapapeles.')}
-function limpiarTodo(){document.querySelectorAll('textarea').forEach(t=>t.value='');['jugadoresOut','disciplinaOut','porterosOut','motmOut','jsonOut'].forEach(id=>document.getElementById(id).textContent='');document.getElementById('preview').textContent='Todavía no hay datos convertidos.';status('Limpio.')}
-function cargarEjemplo(){document.getElementById('partidoId').value='SWE-TUN-2026';document.getElementById('matchId').value='15186951';document.getElementById('fecha').value='2026-06-15';document.getElementById('local').value='Sweden';document.getElementById('visitante').value='Tunisia';document.getElementById('defaultTeam').value='local';document.getElementById('rawAtacante').value='🇸🇪\tYasin Ayari\t2\t0.07\t0\t0\t1 (0)\t-\tM\t8.7\n🇸🇪\tAlexander Isak\t2\t0.32\t0\t1\t2 (0)\tOcas. claras falladas: 1\tF\t8.6\n🇸🇪\tViktor Gyokeres\t2\t0.63\t2\t1\t3 (1)\tOcas. claras falladas: 1\tF\t8.0';document.getElementById('rawDuelos').value='🇸🇪\tYasin Ayari\t11 (4)\t10 (4)\t1 (0)\t19\t1\t1\t0\tM\t8.7\n🇸🇪\tAlexander Isak\t9 (1)\t7 (1)\t2 (0)\t9\t1\t0\t3\tF\t8.6\n🇸🇪\tGabriel Gudmundsson\t10 (7)\t7 (4)\t3 (3)\t10\t2\t3\t0\tM\t7.3';document.getElementById('rawPases').value='🇸🇪\tYasin Ayari\t50\t17/27 (63%)\t2\t5 (1)\t3 (2)\t-\tM\t8.7\n🇸🇪\tAlexander Isak\t35\t14/17 (82%)\t2\t1 (0)\t0\tOcas. claras creadas: 2\tF\t8.6';document.getElementById('rawPorteria').value='🇸🇪\tKristoffer Nordfeldt\t1\t-0.65\t0\t1\t-\tGK\t6.5'}
+function val(id){return document.getElementById(id).value.trim()}
+function norm(s){return String(s||'').trim()}
+function num(s){const m=String(s||'').replace(',','.').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0}
+function cleanName(s){return norm(s).replace(/^\d+\s+/,'').replace(/[⭐★🟨🟥]/g,'').trim()}
+function isTeam(x,m){x=norm(x).toLowerCase();return x && (x===m.local.toLowerCase() || x===m.visitante.toLowerCase())}
+function isPos(x){return POSITIONS.has(norm(x)) || ['g','d','m','f'].includes(norm(x).toLowerCase())}
+function csvEscape(v){v=String(v??'');return /[",\n]/.test(v)?'"'+v.replaceAll('"','""')+'"':v}
+function toCsv(headers, rows){return [headers.join(','), ...rows.map(r=>headers.map(h=>csvEscape(r[h]??'')).join(','))].join('\n')}
+function key(name){return cleanName(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function getPlayer(map, name, pais){const k=key(name); if(!k) return null; if(!map[k]) map[k]={jugador:cleanName(name),pais:pais||'',rival:'',posicion:'',titular:true,minutos:0,goles:0,asistencias:0,disparos:0,tiros_puerta:0,pases_clave:0,regates_exitosos:0,faltas_cometidas:0,faltas_recibidas:0,fueras_juego:0,rating:0,saves:0,goles_encajados:0,porterias_cero:0,penaltis_parados:0,es_portero:false}; return map[k]}
+
+function parseTabular(raw, section, players, m){
+  const lines = raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(!lines.length) return;
+  // Caso ideal: filas copiadas como tabla con tabuladores.
+  const tabRows = lines.filter(l=>l.includes('\t')).map(l=>l.split('\t').map(norm).filter(Boolean));
+  if(tabRows.length){
+    tabRows.forEach(cols=>parseCols(cols, section, players, m));
+    return;
+  }
+  // Caso frecuente en SofaScore: una celda por línea. Detecta equipo + nombre + valores hasta siguiente equipo.
+  let i=0;
+  while(i<lines.length){
+    if(!isTeam(lines[i],m)){i++;continue;}
+    const team=lines[i];
+    const name=cleanName(lines[i+1]||'');
+    if(!name || isTeam(name,m)){i++;continue;}
+    const vals=[]; i+=2;
+    while(i<lines.length && !isTeam(lines[i],m)){vals.push(lines[i]); i++;}
+    parseCells(team,name,vals,section,players,m);
+  }
+}
+
+function parseCols(cols, section, players, m){
+  let team = cols.find(c=>isTeam(c,m)) || m.defaultTeam;
+  let nameIdx = cols.findIndex(c=>c && !isTeam(c,m) && !isPos(c) && /[A-Za-zÁÉÍÓÚáéíóúÑñÖöÜüÄä]/.test(c) && !c.toLowerCase().includes('goles') && !c.toLowerCase().includes('pases') && !c.toLowerCase().includes('valor'));
+  if(nameIdx < 0) return;
+  const name = cleanName(cols[nameIdx]);
+  const vals = cols.slice(nameIdx+1);
+  parseCells(team,name,vals,section,players,m);
+}
+
+function parseCells(team,name,vals,section,players,m){
+  const p=getPlayer(players,name,team); if(!p) return;
+  p.pais = p.pais || team;
+  p.rival = p.pais===m.local ? m.visitante : m.local;
+  const pos = vals.find(isPos);
+  if(pos) p.posicion = pos;
+  if(['G','GK','Portero','Goalkeeper'].includes(pos)) p.es_portero=true;
+  const numbers = vals.filter(v=>/^-?\d/.test(v) || /\d+\/\d+/.test(v));
+  const note = vals.join(' ').toLowerCase();
+  if(section==='general'){
+    if(numbers[0]) p.goles = Math.max(p.goles,num(numbers[0]));
+    if(numbers[1]) p.asistencias = Math.max(p.asistencias,num(numbers[1]));
+    const minute = vals.find(v=>/\d+'/.test(v)); if(minute) p.minutos=Math.max(p.minutos,num(minute));
+    const rating = vals.slice().reverse().find(v=>/^\d+(\.\d+)?$/.test(v) && num(v)<=10); if(rating) p.rating=Math.max(p.rating,num(rating));
+  }
+  if(section==='atacante'){
+    if(numbers[0]) p.tiros_puerta=Math.max(p.tiros_puerta,num(numbers[0]));
+    if(numbers[2]) p.disparos=Math.max(p.disparos,num(numbers[0])+num(numbers[2]));
+    const reg = vals.find(v=>/\(\d+\)/.test(v)); if(reg) p.regates_exitosos=Math.max(p.regates_exitosos,num((reg.match(/\((\d+)\)/)||[])[1]));
+  }
+  if(section==='pases'){
+    const pc = numbers.find(v=>/^\d+\/\d+/.test(v)); if(pc){ const mm=pc.match(/^(\d+)\/\d+/); p.pases_precisos=Number(mm[1]); }
+    if(numbers[2]) p.pases_clave=Math.max(p.pases_clave,num(numbers[2]));
+  }
+  if(section==='duelos'){
+    const faltasIdx = vals.findIndex(v=>norm(v).toLowerCase()==='faltas');
+    if(numbers[4]) p.faltas_cometidas=Math.max(p.faltas_cometidas,num(numbers[4]));
+    if(numbers[5]) p.faltas_recibidas=Math.max(p.faltas_recibidas,num(numbers[5]));
+    if(numbers[6]) p.fueras_juego=Math.max(p.fueras_juego,num(numbers[6]));
+    const rating = vals.slice().reverse().find(v=>/^\d+(\.\d+)?$/.test(v) && num(v)<=10); if(rating) p.rating=Math.max(p.rating,num(rating));
+  }
+  if(section==='porteria'){
+    p.es_portero=true;
+    if(numbers[0]) p.saves=Math.max(p.saves,num(numbers[0]));
+    if(numbers[1]) p.goles_encajados=Math.max(p.goles_encajados,Math.abs(num(numbers[1])));
+    if(numbers[3]) p.penaltis_parados=Math.max(p.penaltis_parados,num(numbers[3]));
+    p.porterias_cero = p.goles_encajados===0 ? 1 : 0;
+    const rating = vals.slice().reverse().find(v=>/^\d+(\.\d+)?$/.test(v) && num(v)<=10); if(rating) p.rating=Math.max(p.rating,num(rating));
+  }
+  if(note.includes('amarilla')) p.amarillas = Math.max(p.amarillas||0,1);
+  if(note.includes('roja')) p.rojas = Math.max(p.rojas||0,1);
+}
+
+function convertAll(){
+  const m=meta();
+  if(!m.partido_id || !m.match_id || !m.fecha || !m.local || !m.visitante){document.getElementById('globalStatus').innerHTML='<span style="color:#b91c1c">Rellena partido_id, match_id, fecha, local y visitante.</span>';return;}
+  const players={};
+  parseTabular(val('rawGeneral'),'general',players,m);
+  parseTabular(val('rawAtacante'),'atacante',players,m);
+  parseTabular(val('rawDefensa'),'defensa',players,m);
+  parseTabular(val('rawPases'),'pases',players,m);
+  parseTabular(val('rawDuelos'),'duelos',players,m);
+  parseTabular(val('rawPorteria'),'porteria',players,m);
+  const arr=Object.values(players).filter(p=>p.jugador);
+  lastRows=arr;
+  const playerRows=arr.map(p=>({partido_id:m.partido_id,match_id:m.match_id,fecha:m.fecha,jugador_id:'',jugador:p.jugador,pais:p.pais,rival:p.rival,posicion:p.posicion||m.posDefault,titular:true,minutos:p.minutos||0,goles:p.goles||0,asistencias:p.asistencias||0,disparos:p.disparos||0,tiros_puerta:p.tiros_puerta||0,pases_clave:p.pases_clave||0,regates_exitosos:p.regates_exitosos||0,faltas_cometidas:p.faltas_cometidas||0,faltas_recibidas:p.faltas_recibidas||0,fueras_juego:p.fueras_juego||0,rating:p.rating||0,fecha_nacimiento:'',fuente:'manual-sofascore-table',actualizado_en:m.updated,es_ejemplo:'false'}));
+  const discRows=arr.map(p=>({partido_id:m.partido_id,match_id:m.match_id,fecha:m.fecha,jugador_id:'',jugador:p.jugador,pais:p.pais,rival:p.rival,amarillas:p.amarillas||0,segundas_amarillas:0,rojas:p.rojas||0,faltas_cometidas:p.faltas_cometidas||0,faltas_recibidas:p.faltas_recibidas||0,fuente:'manual-sofascore-table',actualizado_en:m.updated,es_ejemplo:'false'}));
+  const keeperRows=arr.filter(p=>p.es_portero || ['G','GK'].includes(String(p.posicion).toUpperCase())).map(p=>({partido_id:m.partido_id,match_id:m.match_id,fecha:m.fecha,portero_id:'',portero:p.jugador,pais:p.pais,rival:p.rival,titular:true,minutos:p.minutos||90,saves:p.saves||0,saves_area:0,goles_encajados:p.goles_encajados||0,porterias_cero:p.porterias_cero||0,penaltis_parados:p.penaltis_parados||0,rating:p.rating||0,fuente:'manual-sofascore-table',actualizado_en:m.updated,es_ejemplo:'false'}));
+  const best=arr.filter(p=>Number(p.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating))[0];
+  const motmRows=best?[{partido_id:m.partido_id,match_id:m.match_id,fecha:m.fecha,local:m.local,visitante:m.visitante,jugador_id:'',jugador:best.jugador,pais:best.pais,rating:best.rating,criterio:'rating_mas_alto_visible_sofascore',fuente:'manual-sofascore-table',actualizado_en:m.updated,es_ejemplo:'false'}]:[];
+  document.getElementById('playersCsv').textContent=toCsv(PLAYER_HEADER,playerRows);
+  document.getElementById('disciplineCsv').textContent=toCsv(DISC_HEADER,discRows);
+  document.getElementById('keepersCsv').textContent=toCsv(GK_HEADER,keeperRows);
+  document.getElementById('motmCsv').textContent=toCsv(MOTM_HEADER,motmRows);
+  document.getElementById('jsonOutput').textContent=JSON.stringify(arr.map(p=>({jugador:p.jugador,pais:p.pais,rival:p.rival,stats_json:{posicion:p.posicion||m.posDefault,titular:true,minutos:p.minutos||0,goles:p.goles||0,asistencias:p.asistencias||0,amarillas:p.amarillas||0,rojas:p.rojas||0,faltas_cometidas:p.faltas_cometidas||0,faltas_recibidas:p.faltas_recibidas||0,fueras_juego:p.fueras_juego||0,saves:p.saves||0,goles_encajados:p.goles_encajados||0,rating:p.rating||0,es_portero:!!p.es_portero,motm:best&&best.jugador===p.jugador}})),null,2);
+  renderPreview(arr,best);
+  document.getElementById('globalStatus').textContent=`Convertidos ${arr.length} jugadores. Ahora puedes copiar o descargar los CSV generados.`;
+}
+
+function renderPreview(arr,best){
+  if(!arr.length){document.getElementById('preview').innerHTML='<div class="danger">No he detectado jugadores. Prueba a copiar más columnas o pega la tabla completa.</div>';return;}
+  document.getElementById('preview').innerHTML='<div class="ok"><strong>Datos generados en el navegador.</strong> No se han subido a GitHub todavía. Descarga el CSV o copia las filas y pégalas en el archivo correspondiente.</div>'+`<p><span class="pill">Jugadores: ${arr.length}</span> <span class="pill">Porteros: ${arr.filter(p=>p.es_portero).length}</span> <span class="pill">MOTM probable: ${best?best.jugador+' ('+best.rating+')':'sin rating'}</span></p>`+'<table><thead><tr><th>Jugador</th><th>Equipo</th><th>Pos.</th><th>G</th><th>A</th><th>Faltas</th><th>Recibidas</th><th>Offside</th><th>Saves</th><th>Rating</th></tr></thead><tbody>'+arr.map(p=>`<tr><td>${p.jugador}</td><td>${p.pais}</td><td>${p.posicion||''}</td><td>${p.goles||0}</td><td>${p.asistencias||0}</td><td>${p.faltas_cometidas||0}</td><td>${p.faltas_recibidas||0}</td><td>${p.fueras_juego||0}</td><td>${p.saves||0}</td><td>${p.rating||0}</td></tr>`).join('')+'</tbody></table>';
+}
+
+async function copyOutput(id){
+  const text=document.getElementById(id).textContent.trim();
+  if(!text){alert('No hay contenido para copiar. Pulsa primero Convertir todo.');return;}
+  await navigator.clipboard.writeText(text);
+  document.getElementById('globalStatus').textContent='Copiado al portapapeles. No se ha creado ningún archivo todavía.';
+}
+function downloadOutput(id,filename){
+  const text=document.getElementById(id).textContent.trim();
+  if(!text){alert('No hay contenido para descargar. Pulsa primero Convertir todo.');return;}
+  const blob=new Blob([text+'\n'],{type:filename.endsWith('.json')?'application/json;charset=utf-8':'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  document.getElementById('globalStatus').textContent='Archivo descargado. Revísalo en tu carpeta Descargas.';
+}
+function clearAll(){['rawGeneral','rawAtacante','rawDefensa','rawPases','rawDuelos','rawPorteria','playersCsv','disciplineCsv','keepersCsv','motmCsv','jsonOutput'].forEach(id=>document.getElementById(id).value?document.getElementById(id).value='':document.getElementById(id).textContent='');document.getElementById('preview').textContent='Todavía no hay datos convertidos.';document.getElementById('globalStatus').textContent='';}
 </script>
 </body>
 </html>
