@@ -1,0 +1,28 @@
+2026-06-16 16:33:16,605 INFO Procesando match_id=15186899
+2026-06-16 16:33:19,219 WARNING Intento 1/3 fallido para /event/15186899: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:26,000 WARNING Intento 2/3 fallido para /event/15186899: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:31,903 WARNING Intento 3/3 fallido para /event/15186899: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:36,551 ERROR ERROR match_id=15186899: No se pudo descargar /event/15186899: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+Traceback (most recent call last):
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 203, in scrape_match
+    meta = extract_event_info(match_id, fallback)
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 140, in extract_event_info
+    event = get_json(f"/event/{match_id}").get("event") or {}
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 95, in get_json
+    raise RuntimeError(f"No se pudo descargar {path}: {last_exc}")
+RuntimeError: No se pudo descargar /event/15186899: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:36,552 INFO Procesando match_id=15186951
+2026-06-16 16:33:39,334 WARNING Intento 1/3 fallido para /event/15186951: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:45,730 WARNING Intento 2/3 fallido para /event/15186951: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:52,532 WARNING Intento 3/3 fallido para /event/15186951: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:56,754 ERROR ERROR match_id=15186951: No se pudo descargar /event/15186951: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+Traceback (most recent call last):
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 203, in scrape_match
+    meta = extract_event_info(match_id, fallback)
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 140, in extract_event_info
+    event = get_json(f"/event/{match_id}").get("event") or {}
+  File "/home/runner/work/mundial-2026/mundial-2026/backend/scripts/scrape_sofascore.py", line 95, in get_json
+    raise RuntimeError(f"No se pudo descargar {path}: {last_exc}")
+RuntimeError: No se pudo descargar /event/15186951: HTTP 403: {"error": {"code": 403, "reason": "Forbidden" }}
+2026-06-16 16:33:56,755 INFO Resumen scraper: partidos=2 ok=0 fallidos=2
+2026-06-16 16:33:56,755 INFO El workflow termina en verde aunque SofaScore bloquee. Si fallidos > 0, usa carga manual en CSV.
